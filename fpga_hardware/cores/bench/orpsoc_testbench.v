@@ -500,15 +500,14 @@ end*/
  `else
   `define VCD_SUFFIX   ".vcd"
  `endif
- `define TEST_NAME_STRING "hwinv"
+ `define TEST_NAME_STRING "a2"
 	$display("* VCD in %s\n", {"",`TEST_NAME_STRING,`VCD_SUFFIX});
 	$dumpfile({"",`TEST_NAME_STRING,`VCD_SUFFIX});
  `ifndef VCD_DEPTH
   `define VCD_DEPTH 0
  `endif 
-	//$dumpvars(3, orpsoc_testbench.dut.or1200_top0.or1200_cpu);
-  $dumpvars(10, orpsoc_testbench.dut);
-
+	$dumpvars(3, orpsoc_testbench.dut.or1200_top0.or1200_cpu);
+  
 /*for(r = 0; r < 1000; r = r + 1)begin 
   for(t = 0; t < 10; t = t + 1) begin
     #(2000000);
