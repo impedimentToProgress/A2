@@ -43,7 +43,7 @@ iverilog: orpsoc.vvp
 distclean: clean
 	rm -rf *.{ngc,ncd,ngd,bit}  
 clean:
-	rm -rf _xmsgs xst *.{xst,xrpt,srp,lso,log,v,pwr,xml} *impact* auto_project* XPower_Isim
+	rm -rf _xmsgs xst *.{xst,xrpt,srp,lso,log,pwr,xml} *impact* auto_project* XPower_Isim
 
 orpsoc.vvp: $(IVERILOG_SRCS)
 	iverilog -s orpsoc_testbench  -t vvp -o $@ -I$(ORPSOC_RTL) -I$(DBG_IF_RTL) -I$(UART_RTL)  -I$(DBG_IF_RTL) -I$(OR1200_RTL) -I$(TEST_BENCH) $^
