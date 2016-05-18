@@ -49,7 +49,7 @@
 // `define BOARD_CLOCK_PERIOD 5000 // 200MHz (pS accuracy for Xilinx sims.) 
  `define BOARD_CLOCK_PERIOD 10 // 100MHz (nS) 
 
- `define ADV_DEBUG	 
+// `define ADV_DEBUG	 
 // `define JTAG_DEBUG
 // `define ROM_WB
  `define RAM_WB
