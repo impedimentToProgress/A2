@@ -5,6 +5,7 @@ Compile your program
 Convert the binary to a bin file
 Convert the bin file to a vmem file using the bin2vmem utility in software/utils
 Rename the resulting file sram.vmem and replace the file in fpga_hardware/cores/ram_wb
+If you get illegal instruction exceptions (0x700), you may need to move sram.vmem to fpga_hardware/.
 
 For simulation (using ModelSim):
 Comment-out debug options in fpga_hardware\cores\top\orpsoc-defines.v
