@@ -4,6 +4,7 @@
 
 Comment-out debug options in fpga_hardware\cores\top\orpsoc-defines.v
 For example, you should have
+
 `// define ADV_DEBUG`	 
 `// define JTAG_DEBUG`
 
