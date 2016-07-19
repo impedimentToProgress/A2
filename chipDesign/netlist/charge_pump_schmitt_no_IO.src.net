@@ -1,0 +1,38 @@
+************************************************************************
+* auCdl Netlist:
+* 
+* Library Name:  QQ
+* Top Cell Name: charge_pump_schmitt_no_IO
+* View Name:     schematic
+* Netlisted on:  May 28 02:13:53 2015
+************************************************************************
+
+*.EQUATION
+*.SCALE METER
+*.MEGA
+.PARAM
+
+
+
+************************************************************************
+* Library Name: QQ
+* Cell Name:    charge_pump_schmitt_no_IO
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT charge_pump_schmitt_no_IO OUT Signal VDD VSS
+*.PININFO Signal:I OUT:O VDD:B VSS:B
+MM6 net033 vcap VSS VSS nch_hvt l=120.0n w=120.0n m=1
+MM5 OUT vcap net033 VSS nch_hvt l=120.0n w=120.0n m=1
+*MM14 VDD net04 VDD VDD pch_hvt l=60n w=120.0n m=1
+MM21 VSS OUT net09 VDD pch_hvt l=100n w=500n m=1
+MM3 net04 Signal VDD VDD pch_hvt l=100n w=120.0n m=1
+MM1 VSS vcap VSS VSS nch l=200n w=300n m=6
+MM10 vcap VSS VSS VSS nch l=200n w=530.0n m=1
+MM0 net04 Signal vcap VSS nch l=250.0n w=200n m=1
+MM7 VDD OUT net033 VSS nch_hvt l=200n w=120.0n m=1
+MM2 net09 vcap VDD VDD pch l=60n w=120.0n m=1
+MM4 OUT vcap net09 VDD pch l=60n w=120.0n m=1
+MM8 VSS vcap VSS VDD pch l=200n w=300n m=6
+.ENDS
+

@@ -1,0 +1,37 @@
+************************************************************************
+* auCdl Netlist:
+* 
+* Library Name:  MAL_BLOCK
+* Top Cell Name: charge_pump_schmitt
+* View Name:     schematic
+* Netlisted on:  May 29 02:49:52 2015
+************************************************************************
+
+*.EQUATION
+*.SCALE METER
+*.MEGA
+.PARAM
+
+
+
+************************************************************************
+* Library Name: MAL_BLOCK
+* Cell Name:    charge_pump_schmitt
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT charge_pump_schmitt OUT Signal VDD VSS
+*.PININFO Signal:I OUT:O VDD:B VSS:B
+MM11 vcap VSS VSS VSS nch l=200n w=550.0n m=1
+MM0 net8 Signal vcap VSS nch l=100n w=120.0n m=1
+MM15 net8 Signal VDD VDD pch_hvt l=100n w=120.0n m=1
+MM10 VSS OUT net17 VDD pch l=100n w=120.0n m=1
+*MM14 VDD net8 VDD VDD pch_hvt l=100n w=120.0n m=1
+MM1 net028 vcap VSS VSS nch_25ud18 l=260n w=400n m=1
+MM4 OUT vcap net028 VSS nch_25ud18 l=260n w=400n m=1
+MM9 VSS vcap VSS VSS nch_25ud18 l=600n w=510.0n m=5
+MM7 VDD OUT net028 VSS nch_hvt l=200n w=120.0n m=1
+MM5 net17 vcap VDD VDD pch_25ud18 l=260.0n w=400n m=1
+MM6 OUT vcap net17 VDD pch_25ud18 l=260.0n w=400n m=1
+.ENDS
+
