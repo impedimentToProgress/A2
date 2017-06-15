@@ -1,0 +1,85 @@
+BASE_SRCS_DIR    = verilog
+ORPSOC_SRCS_DIR  = $(BASE_SRCS_DIR)/orpsoc
+OR1200_SRCS_DIR  = $(ORPSOC_SRCS_DIR)/or1200
+UART_SRCS_DIR    = $(ORPSOC_SRCS_DIR)/uart16550/rtl/verilog
+ARBITER_SRCS_DIR = $(ORPSOC_SRCS_DIR)/arbiter
+RAM_SRCS_DIR     = $(ORPSOC_SRCS_DIR)/ram_wb
+CLKGEN_SRCS_DIR  = $(ORPSOC_SRCS_DIR)/clkgen
+TOP_SRCS_DIR     = $(ORPSOC_SRCS_DIR)/top
+
+HDL_SOURCES := $(OR1200_SRCS_DIR)/or1200_alu.v \
+$(OR1200_SRCS_DIR)/or1200_fpu_post_norm_div.v \
+$(OR1200_SRCS_DIR)/or1200_fpu_div.v \
+$(OR1200_SRCS_DIR)/or1200_fpu_pre_norm_div.v \
+$(OR1200_SRCS_DIR)/or1200_fpu_post_norm_mul.v \
+$(OR1200_SRCS_DIR)/or1200_fpu_mul.v \
+$(OR1200_SRCS_DIR)/or1200_fpu_pre_norm_mul.v \
+$(OR1200_SRCS_DIR)/or1200_fpu_post_norm_addsub.v \
+$(OR1200_SRCS_DIR)/or1200_fpu_addsub.v \
+$(OR1200_SRCS_DIR)/or1200_fpu_pre_norm_addsub.v \
+$(OR1200_SRCS_DIR)/or1200_fpu_arith.v \
+$(OR1200_SRCS_DIR)/or1200_fpu_post_norm_intfloat_conv.v \
+$(OR1200_SRCS_DIR)/or1200_fpu_intfloat_conv.v \
+$(OR1200_SRCS_DIR)/or1200_fpu_fcmp.v \
+$(OR1200_SRCS_DIR)/or1200_fpu.v \
+$(OR1200_SRCS_DIR)/or1200_mem2reg.v \
+$(OR1200_SRCS_DIR)/or1200_reg2mem.v \
+$(OR1200_SRCS_DIR)/or1200_dpram.v \
+$(OR1200_SRCS_DIR)/or1200_rfram_generic.v \
+$(OR1200_SRCS_DIR)/or1200_rf.v \
+$(OR1200_SRCS_DIR)/or1200_genpc.v \
+$(OR1200_SRCS_DIR)/or1200_if.v \
+$(OR1200_SRCS_DIR)/or1200_ctrl.v \
+$(OR1200_SRCS_DIR)/or1200_operandmuxes.v \
+$(OR1200_SRCS_DIR)/or1200_amultp2_32x32.v \
+$(OR1200_SRCS_DIR)/or1200_mult_mac.v \
+$(OR1200_SRCS_DIR)/or1200_sprs.v \
+$(OR1200_SRCS_DIR)/or1200_lsu.v \
+$(OR1200_SRCS_DIR)/or1200_wbmux.v \
+$(OR1200_SRCS_DIR)/or1200_freeze.v \
+$(OR1200_SRCS_DIR)/or1200_except.v \
+$(OR1200_SRCS_DIR)/or1200_cfgr.v \
+$(OR1200_SRCS_DIR)/or1200_cpu.v \
+$(OR1200_SRCS_DIR)/or1200_spram.v \
+$(OR1200_SRCS_DIR)/or1200_ic_ram.v \
+$(OR1200_SRCS_DIR)/or1200_ic_tag.v \
+$(OR1200_SRCS_DIR)/or1200_ic_fsm.v \
+$(OR1200_SRCS_DIR)/or1200_ic_top.v \
+$(OR1200_SRCS_DIR)/or1200_dc_ram.v \
+$(OR1200_SRCS_DIR)/or1200_dc_tag.v \
+$(OR1200_SRCS_DIR)/or1200_dc_fsm.v \
+$(OR1200_SRCS_DIR)/or1200_dc_top.v \
+$(OR1200_SRCS_DIR)/or1200_immu_tlb.v \
+$(OR1200_SRCS_DIR)/or1200_immu_top.v \
+$(OR1200_SRCS_DIR)/or1200_dmmu_tlb.v \
+$(OR1200_SRCS_DIR)/or1200_dmmu_top.v \
+$(OR1200_SRCS_DIR)/or1200_iwb_biu.v \
+$(OR1200_SRCS_DIR)/or1200_wb_biu.v \
+$(OR1200_SRCS_DIR)/or1200_qmem_top.v \
+$(OR1200_SRCS_DIR)/or1200_sb_fifo.v \
+$(OR1200_SRCS_DIR)/or1200_sb.v \
+$(OR1200_SRCS_DIR)/or1200_du.v \
+$(OR1200_SRCS_DIR)/or1200_tt.v \
+$(OR1200_SRCS_DIR)/or1200_pm.v \
+$(OR1200_SRCS_DIR)/or1200_pic.v \
+$(UART_SRCS_DIR)/uart_defines.v \
+$(UART_SRCS_DIR)/uart_top.v \
+$(UART_SRCS_DIR)/uart_wb.v \
+$(UART_SRCS_DIR)/uart_regs.v \
+$(UART_SRCS_DIR)/uart_sync_flops.v \
+$(UART_SRCS_DIR)/uart_transmitter.v \
+$(UART_SRCS_DIR)/uart_receiver.v \
+$(UART_SRCS_DIR)/uart_tfifo.v \
+$(UART_SRCS_DIR)/uart_rfifo.v \
+$(UART_SRCS_DIR)/raminfr.v \
+$(ARBITER_SRCS_DIR)/arbiter_bytebus.v \
+$(ARBITER_SRCS_DIR)/arbiter_dbus.v \
+$(ARBITER_SRCS_DIR)/arbiter_ibus.v \
+$(RAM_SRCS_DIR)/ram_wb.v \
+$(RAM_SRCS_DIR)/ram_wb_b3.v \
+$(CLKGEN_SRCS_DIR)/clkgen.v \
+$(TOP_SRCS_DIR)/orpsoc-defines.v \
+$(TOP_SRCS_DIR)/orpsoc-params.v \
+$(TOP_SRCS_DIR)/synthesis-defines.v \
+$(TOP_SRCS_DIR)/timescale.v \
+$(TOP_SRCS_DIR)/orpsoc_top.v

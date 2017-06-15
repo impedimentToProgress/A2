@@ -1,5 +1,5 @@
-remove_design -all
-define_design_lib WORK -path WORK 
+dc::remove_design -all
+dc::define_design_lib WORK -path WORK 
 
 #analyze -library WORK -format verilog $base_dir/../top/orpsoc-defines.v
 #analyze -library WORK -format verilog $base_dir/../top/orpsoc-params.v
@@ -116,20 +116,17 @@ analyze -library WORK -format verilog $base_dir/../dbg_if/dbg_wb.v
 analyze -library WORK -format verilog $base_dir/../jtag_tap/jtag_tap.v
 analyze -library WORK -format verilog $base_dir/../jtag_tap/tap_defines.v
 
-
-# Top Module 
-analyze -library WORK -format verilog $base_dir/or1200_top.v 
-
 analyze -library WORK -format verilog $base_dir/../arbiter/arbiter_bytebus.v 
 analyze -library WORK -format verilog $base_dir/../arbiter/arbiter_dbus.v 
 analyze -library WORK -format verilog $base_dir/../arbiter/arbiter_ibus.v 
 #analyze -library WORK -format verilog $base_dir/../ram_wb/ram_wb_b3_dummy.v 
 analyze -library WORK -format verilog $base_dir/../ram_wb/ram_wb.v
-analyze -library WORK -format verilog $base_dir/../ram_wb/ram_wb_sram.v
+analyze -library WORK -format verilog ../verilog/ram_wb/ram_wb_sram.v
+#analyze -library WORK -format verilog $base_dir/../ram_wb/ram_wb_sram.v
 analyze -library WORK -format verilog $base_dir/../clkgen/clkgen.v
 analyze -library WORK -format verilog $base_dir/../top/orpsoc_top.v
-analyze -library WORK -format verilog $base_dir/../mem_wrapper/mem_scan.v
-analyze -library WORK -format verilog $base_dir/../mem_wrapper/mem_tieoffs.v
+analyze -library WORK -format verilog ../verilog/mem_wrapper/mem_scan.v
+analyze -library WORK -format verilog ../verilog/mem_wrapper/mem_tieoffs.v
 #analyze -library WORK -format verilog $base_dir/../../syn/mem_dummy_block.v
 
 

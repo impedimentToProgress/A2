@@ -1,9 +1,9 @@
 # OpenRISC Synthesis Script 
 # Written by Mojtaba Ebrahimi 
 
-source -verbose "../common/common.tcl"
+source -verbose "./common/common.tcl"
 
-set base_dir "../../verilog/or1200/" 
+set base_dir "../../fpga_hardware/cores/or1200" 
 set top_level "orpsoc_top"
 
 source -verbose "./orpsoc_top_read_verilog.tcl"
@@ -61,7 +61,7 @@ compile -map_effort high
 #compile_ultra
 compile -inc -only_design_rule
 
-source -verbose "../common/namingrules.tcl"
+source -verbose "./common/namingrules.tcl"
 
 # Generate structural verilog netlist
 write -hierarchy -format verilog -output "${top_level}.nl.v"

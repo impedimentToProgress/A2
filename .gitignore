@@ -1,0 +1,6 @@
+*.DS_Store
+*.rpt
+*.nl.v
+*.sdc
+asic_hardware/synth/.pbs*
+asic_hardware/synth/.st*
