@@ -95,9 +95,10 @@ set hdl_src_files [list "or1200_alu.v" \
 
 set report_dir "synth_reports";# name of directory to place output files
 set netlist_dir "../netlist"  ;# name of directory to place output files
-set top_level "orpsoc_top"   	  ;# name of top level module
+set top_level "orpsoc_top"    ;# name of top level module
 
-set clk_period 20000; # 20 ns clock period = 50 MHz
+#set clk_period 20000; # 20 ns clock period = 50 MHz
+set clk_period 5000; # 5 ns clock period = 200 MHz
 set clk_uncertainty 0.3
 set clk_transition 0.1
 set clk_latency 0.05
@@ -108,9 +109,11 @@ set clk_name "CLK"
 set typical_output_delay 0.200
 set typical_wire_load 0.2
 
-set_attribute remove_assigns true ;# Remove all assign statements
+#set_attribute syn_map_effort express
+set_attribute syn_map_effort high 
+set_attribute remove_assigns true; # must be false if "remove_assigns_without_optimization" is used
 set_attribute hdl_max_memory_address_range 4294967296
-# ::legacy::set_attribute hdl_error_on_blackbox true /
+::legacy::set_attribute hdl_error_on_blackbox true /
 
 #*********************************************************
 #*   below here shouldn't need to be changed...          *
@@ -136,8 +139,8 @@ set_ideal_network [get_ports sys_clk_in_p]
 set_max_transition 0.100 $top_level
 set_max_fanout 20 $top_level
 
-# dc::set_driving_cell -lib_cell BUFX1BA10TR [all_inputs]
-# dc::set_driving_cell -lib_cell BUFX4BA10TR [find port $clk_port]
+set_driving_cell -lib_cell SEN_BUF_AS_1 [all_inputs]
+set_driving_cell -lib_cell SEN_BUF_AS_4 [find -port $clk_port]
 
 set_output_delay $typical_output_delay -clock $clk_name [all_outputs] 
 
@@ -145,7 +148,7 @@ set_load $typical_wire_load [all_outputs]
 
 # report port [get_ports sys_clk_in_p]
 
-# remove_assigns_without_optimization
+set_remove_assign_options -dont_skip_unconstrained_paths -design ${top_level} 
 
 # check that the design is OK so far
 check_design
@@ -153,8 +156,8 @@ check_design
 uniquify $top_level
 
 # Synthesize the design to the target library
-#synthesize -to_generic -effort low 
-synthesize -to_mapped -effort high
+syn_map
+# remove_assigns_without_optimization -dont_skip_unconstrained_paths -design ${top_level}
 
 # Write out the structural Verilog and sdc files
 write_hdl -mapped   > ${netlist_dir}/${top_level}.nl.v
