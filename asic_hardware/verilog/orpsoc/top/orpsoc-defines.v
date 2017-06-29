@@ -53,7 +53,7 @@
 // `define JTAG_DEBUG
 // `define ROM_WB
  `define RAM_WB
- `define UART0
+ // `define UART0
 // `define GPIO0
 
 // end of included module defines - keep this comment line here, scripts depend on it!!

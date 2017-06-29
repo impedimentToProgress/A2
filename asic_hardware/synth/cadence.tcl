@@ -7,12 +7,10 @@
 # Set the search paths to the libraries and the HDL files
 # Remember that "." means your current directory. Add more directories
 # after the . if you like. 
-set_attribute hdl_search_path {../verilog/orpsoc/or1200/ ../verilog/orpsoc/uart16550/ ../verilog/orpsoc/arbiter ../verilog/orpsoc/ram_wb ../verilog/orpsoc/clkgen ../verilog/orpsoc/top  } 
-set_attribute lib_search_path {/home/cadlib/Processes/IBM/STANDARD_CELLS/Virage/cp65npksdsta03/liberty/logic_synth}
-set_attribute library [list "/home/cadlib/Processes/IBM/STANDARD_CELLS/Virage/cp65npksdsta03/liberty/logic_synth/cp65npksdst_ss0p80v125c.lib"]
-set_attribute wireload_mode enclosed 
-set_attribute hdl_error_on_blackbox true
-set_attribute information_level 7 
+set_db hdl_search_path {../verilog/orpsoc/or1200/ ../verilog/orpsoc/arbiter ../verilog/orpsoc/ram_wb ../verilog/orpsoc/clkgen ../verilog/orpsoc/top  } 
+set_db lib_search_path {/home/cadlib/Processes/IBM/STANDARD_CELLS/Virage/cp65npksdsta03/liberty/logic_synth}
+set_db library [list "/home/cadlib/Processes/IBM/STANDARD_CELLS/Virage/cp65npksdsta03/liberty/logic_synth/cp65npksdst_ss0p80v125c.lib"]
+# ../verilog/orpsoc/uart16550/
 
 # Load HDL source files
 set hdl_src_files [list "or1200_alu.v" \
@@ -72,15 +70,6 @@ set hdl_src_files [list "or1200_alu.v" \
 "or1200_tt.v" \
 "or1200_pm.v" \
 "or1200_pic.v" \
-"uart_defines.v" \
-"uart_top.v" \
-"uart_wb.v" \
-"uart_regs.v" \
-"uart_sync_flops.v" \
-"uart_transmitter.v" \
-"uart_receiver.v" \
-"uart_tfifo.v" \
-"uart_rfifo.v" \
 "raminfr.v" \
 "arbiter_bytebus.v" \
 "arbiter_dbus.v" \
@@ -93,12 +82,22 @@ set hdl_src_files [list "or1200_alu.v" \
 "timescale.v" \
 "orpsoc_top.v"];
 
+# "uart_defines.v" \
+# "uart_top.v" \
+# "uart_wb.v" \
+# "uart_regs.v" \
+# "uart_sync_flops.v" \
+# "uart_transmitter.v" \
+# "uart_receiver.v" \
+# "uart_tfifo.v" \
+# "uart_rfifo.v" \
+
 set report_dir "synth_reports";# name of directory to place output files
 set netlist_dir "../netlist"  ;# name of directory to place output files
 set top_level "orpsoc_top"    ;# name of top level module
 
 #set clk_period 20000; # 20 ns clock period = 50 MHz
-set clk_period 5000; # 5 ns clock period = 200 MHz
+set clk_period 10000; # 10 ns clock period = 100 MHz
 set clk_uncertainty 0.3
 set clk_transition 0.1
 set clk_latency 0.05
@@ -109,11 +108,27 @@ set clk_name "CLK"
 set typical_output_delay 0.200
 set typical_wire_load 0.2
 
-#set_attribute syn_map_effort express
-set_attribute syn_map_effort high 
-set_attribute remove_assigns true; # must be false if "remove_assigns_without_optimization" is used
-set_attribute hdl_max_memory_address_range 4294967296
-::legacy::set_attribute hdl_error_on_blackbox true /
+set_db wireload_mode enclosed 
+set_db hdl_error_on_blackbox true
+set_db information_level 7 
+set_db hdl_preserve_unused_registers true
+set_db optimize_merge_flops false
+set_db optimize_merge_latches false
+set_db optimize_constant_0_flops false
+set_db optimize_constant_1_flops false
+set_db optimize_constant_latches false
+set_db delete_unloaded_seqs false
+set_db write_vlog_preserve_net_name true
+set_db hdl_max_loop_limit 2570
+set_db use_tiehilo_for_const unique
+set_db auto_partition true
+set_db remove_assigns true; # must be false if "remove_assigns_without_optimization" is used
+set_db hdl_max_memory_address_range 4294967296
+
+# Synthesis Effort
+set_db syn_generic_effort medium
+set_db syn_map_effort low
+set_db syn_opt_effort none
 
 #*********************************************************
 #*   below here shouldn't need to be changed...          *
@@ -134,13 +149,13 @@ set_clock_uncertainty -setup 0.1 [all_clocks]
 set_clock_uncertainty -hold $clk_uncertainty [all_clocks]
 
 # Disable timing of clock??
-set_ideal_network [get_ports sys_clk_in_p]
+set_ideal_network [get_ports $clk_port]
 
 set_max_transition 0.100 $top_level
 set_max_fanout 20 $top_level
 
 set_driving_cell -lib_cell SEN_BUF_AS_1 [all_inputs]
-set_driving_cell -lib_cell SEN_BUF_AS_4 [find -port $clk_port]
+set_driving_cell -lib_cell SEN_BUF_AS_4 [get_ports $clk_port]
 
 set_output_delay $typical_output_delay -clock $clk_name [all_outputs] 
 
@@ -156,7 +171,8 @@ check_design
 uniquify $top_level
 
 # Synthesize the design to the target library
-syn_map
+syn_generic ${top_level}
+syn_map ${top_level}
 # remove_assigns_without_optimization -dont_skip_unconstrained_paths -design ${top_level}
 
 # Write out the structural Verilog and sdc files
@@ -169,7 +185,7 @@ report area > ${report_dir}/${top_level}_area.rpt
 report messages -error > ${report_dir}/${top_level}_errors.rpt
 report design_rules ${top_level} > ${report_dir}/${top_level}_drc.rpt
 report power ${top_level} > ${report_dir}/${top_level}_power.rpt
-report timing -summary > ${report_dir}/${top_level}_timing.rpt
+report timing -lint > ${report_dir}/${top_level}_timing.rpt
 report gates ${top_level} > ${report_dir}/${top_level}_cell.rpt
 # report port         > ${report_dir}/${top_level}_port.rpt
 
