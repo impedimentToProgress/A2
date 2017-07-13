@@ -7,9 +7,9 @@
 # Set the search paths to the libraries and the HDL files
 # Remember that "." means your current directory. Add more directories
 # after the . if you like. 
-set_db hdl_search_path {../verilog/orpsoc/or1200/ ../verilog/orpsoc/arbiter ../verilog/orpsoc/ram_wb ../verilog/orpsoc/clkgen ../verilog/orpsoc/top  } 
-set_db lib_search_path {/home/cadlib/Processes/IBM/STANDARD_CELLS/Virage/cp65npksdsta03/liberty/logic_synth}
-set_db library [list "/home/cadlib/Processes/IBM/STANDARD_CELLS/Virage/cp65npksdsta03/liberty/logic_synth/cp65npksdst_ss0p80v125c.lib"]
+set_attribute hdl_search_path {../verilog/orpsoc/or1200/ ../verilog/orpsoc/arbiter ../verilog/orpsoc/ram_wb ../verilog/orpsoc/clkgen ../verilog/orpsoc/top  } 
+set_attribute lib_search_path {/home/cadlib/Processes/IBM/STANDARD_CELLS/Virage/cp65npksdsta03/liberty/logic_synth}
+set_attribute library [list "/home/cadlib/Processes/IBM/STANDARD_CELLS/Virage/cp65npksdsta03/liberty/logic_synth/cp65npksdst_ss0p80v125c.lib"]
 # ../verilog/orpsoc/uart16550/
 
 # Load HDL source files
@@ -70,7 +70,6 @@ set hdl_src_files [list "or1200_alu.v" \
 "or1200_tt.v" \
 "or1200_pm.v" \
 "or1200_pic.v" \
-"raminfr.v" \
 "arbiter_bytebus.v" \
 "arbiter_dbus.v" \
 "arbiter_ibus.v" \
@@ -82,6 +81,7 @@ set hdl_src_files [list "or1200_alu.v" \
 "timescale.v" \
 "orpsoc_top.v"];
 
+# "raminfr.v" \
 # "uart_defines.v" \
 # "uart_top.v" \
 # "uart_wb.v" \
@@ -108,27 +108,27 @@ set clk_name "CLK"
 set typical_output_delay 0.200
 set typical_wire_load 0.2
 
-set_db wireload_mode enclosed 
-set_db hdl_error_on_blackbox true
-set_db information_level 7 
-set_db hdl_preserve_unused_registers true
-set_db optimize_merge_flops false
-set_db optimize_merge_latches false
-set_db optimize_constant_0_flops false
-set_db optimize_constant_1_flops false
-set_db optimize_constant_latches false
-set_db delete_unloaded_seqs false
-set_db write_vlog_preserve_net_name true
-set_db hdl_max_loop_limit 2570
-set_db use_tiehilo_for_const unique
-set_db auto_partition true
-set_db remove_assigns true; # must be false if "remove_assigns_without_optimization" is used
-set_db hdl_max_memory_address_range 4294967296
+set_attribute wireload_mode enclosed 
+set_attribute hdl_error_on_blackbox true
+set_attribute information_level 7 
+set_attribute hdl_preserve_unused_registers true
+set_attribute optimize_merge_flops false
+set_attribute optimize_merge_latches false
+set_attribute optimize_constant_0_flops false
+set_attribute optimize_constant_1_flops false
+set_attribute optimize_constant_latches false
+set_attribute delete_unloaded_seqs false
+set_attribute write_vlog_preserve_net_name true
+set_attribute hdl_max_loop_limit 2570
+set_attribute use_tiehilo_for_const unique
+set_attribute auto_partition true
+set_attribute remove_assigns true; # must be false if "remove_assigns_without_optimization" is used
+set_attribute hdl_max_memory_address_range 4294967296
 
 # Synthesis Effort
-set_db syn_generic_effort medium
-set_db syn_map_effort low
-set_db syn_opt_effort none
+# set_attribute syn_generic_effort medium
+# set_attribute syn_map_effort low
+# set_attribute syn_opt_effort none
 
 #*********************************************************
 #*   below here shouldn't need to be changed...          *
@@ -152,7 +152,8 @@ set_clock_uncertainty -hold $clk_uncertainty [all_clocks]
 set_ideal_network [get_ports $clk_port]
 
 set_max_transition 0.100 $top_level
-set_max_fanout 20 $top_level
+# set_max_fanout 20 $top_level
+set_max_fanout 10 $top_level
 
 set_driving_cell -lib_cell SEN_BUF_AS_1 [all_inputs]
 set_driving_cell -lib_cell SEN_BUF_AS_4 [get_ports $clk_port]
@@ -171,8 +172,10 @@ check_design
 uniquify $top_level
 
 # Synthesize the design to the target library
-syn_generic ${top_level}
-syn_map ${top_level}
+# syn_generic ${top_level}
+# syn_map ${top_level}
+synthesize -to_generic -eff low
+synthesize -to_mapped -effort low  
 # remove_assigns_without_optimization -dont_skip_unconstrained_paths -design ${top_level}
 
 # Write out the structural Verilog and sdc files
