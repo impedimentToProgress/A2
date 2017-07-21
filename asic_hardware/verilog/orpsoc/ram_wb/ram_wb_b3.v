@@ -27,10 +27,8 @@ module ram_wb_b3(
    input 		wb_rst_i;
 
    // Memory parameters
-   // parameter mem_size_bytes = 32'h0002_0000; // 128KBytes
-   // parameter mem_adr_width = 17;             //(log2(mem_size_bytes));
-   parameter mem_size_bytes = 32'h0000_0010; // 16Bytes
-   parameter mem_adr_width = 3;             //(log2(mem_size_bytes));
+   parameter mem_size_bytes = 32'h0002_0000; // 128KBytes
+   parameter mem_adr_width = 17;             //(log2(mem_size_bytes));
    
    parameter bytes_per_dw = (dw/8);
    parameter adr_width_for_num_word_bytes = 2; //(log2(bytes_per_dw))
@@ -90,10 +88,10 @@ module ram_wb_b3(
 	    burst_adr_counter = adr + 1;
 	  if (wb_bte_i_r == 2'b01) // 4-beat wrap burst
 	    burst_adr_counter[1:0] = adr[1:0] + 1;
-	  if (wb_bte_i_r == 2'b10) // 8-beat wrap burst
-	    burst_adr_counter[2:0] = adr[2:0] + 1;
-	  if (wb_bte_i_r == 2'b11) // 16-beat wrap burst
-	    burst_adr_counter[3:0] = adr[3:0] + 1;
+	  // if (wb_bte_i_r == 2'b10) // 8-beat wrap burst
+	  //   burst_adr_counter[2:0] = adr[2:0] + 1;
+	  // if (wb_bte_i_r == 2'b11) // 16-beat wrap burst
+	  //   burst_adr_counter[3:0] = adr[3:0] + 1;
        end // if ((wb_cti_i_r == 3'b010) & wb_ack_o_r)
 
    always @(posedge wb_clk_i)
