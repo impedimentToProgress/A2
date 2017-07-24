@@ -15,8 +15,8 @@ set_attribute hdl_search_path {
 	../verilog/orpsoc/ram_wb \
 	../verilog/orpsoc/clkgen \
 	../verilog/orpsoc/top} 
-set_attribute lib_search_path {XXX}
-set_attribute library [list "XXX.lib"]
+set_attribute lib_search_path {/home/cadlib/Processes/IBM/STANDARD_CELLS/Virage/cp65npksdsta03/liberty/logic_synth}
+set_attribute library [list "cp65npksdst_tt1p0v25c.lib"]
 
 # Configure Super Threading Options
 # set_attribute max_cpus_per_server  1

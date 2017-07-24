@@ -1,0 +1,46 @@
+# Specify the name of your top level module,
+# netlist and par paths, and std cell library path
+set top_level   "orpsoc_top"
+set syn_root    "/home/ttrippel/A2/asic_hardware/netlist"
+set par_root 	"/home/ttrippel/A2/asic_hardware/par"
+set tech_path   "XXX"
+
+# Load the Verilog netlist output from synthesis
+set init_verilog            ${syn_root}/${top_level}.nl.v
+# set init_verilog            ${syn_root}/${top_level}.nl.v
+set init_design_netlisttype {Verilog}
+set init_design_settop		{1}
+set init_top_cell			${top_level}
+set init_design_uniquify    {1}
+
+# Load the standard cell timing file
+create_library_set -name common_library_set -timing [list ${tech_path}/XXX.lib]
+
+# Load standard cell LEF file(s)
+set init_lef_file {
+	XXX \
+	XXX \
+}
+
+# Load SDC timing constraint file output from synthesis
+create_constraint_mode -name sdc_constraints -sdc_files [list ${syn_root}/${top_level}.sdc]
+# create_constraint_mode -name sdc_constraints -sdc_files [list ${syn_root}/${top_level}.sdc]
+
+# Load the I/O constraint file (@TODO: where is this generated??)
+# set init_io_file {par.io}
+
+# set delaycal_use_default_delay_limit {1000}
+# set delaycal_default_net_delay {5ns}
+# set delaycal_default_net_load {0.5pf}
+# set delaycal_input_transition_delay {60ps}
+
+set init_pwr_net {VDD VDDPST VDDTEST CVDD}
+set init_gnd_net {VSS VSSPST VSSTEST}
+
+# (TODO: where/what is this file??)
+# create_rc_corner -name rc_max -cap_table "XXX" 
+
+# set extract_shrink_factor {1.0}
+# setLibraryUnit -time none
+set init_remove_assigns {0}
+# set init_assign_buffer {0}
