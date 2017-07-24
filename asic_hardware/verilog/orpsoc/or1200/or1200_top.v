@@ -91,7 +91,7 @@ module or1200_top(
 	pm_immu_gate_o, pm_tt_gate_o, pm_cpu_gate_o, pm_wakeup_o, pm_lvolt_o
 
 ,sig_tick
-,led_sr
+,sr_out, sr, ex_insn, ex_pc
 
 );
 
@@ -197,8 +197,11 @@ output			pm_cpu_gate_o;
 output			pm_wakeup_o;
 output			pm_lvolt_o;
 
-output 			led_sr;
-
+output 				sr_out;
+output 	[16:0]		sr;
+output  [31:0]		ex_insn;
+output  [31:0]		ex_pc;
+assign sr_out = sr[0];
 //
 // Internal wires and regs
 //
@@ -713,7 +716,7 @@ or1200_cpu(
 	.spr_cs(spr_cs),
 	.spr_we(spr_we),
         .mtspr_dc_done(mtspr_dc_done)
-   , .led_sr(led_sr)
+   , .sr(sr)
 );
 
 //

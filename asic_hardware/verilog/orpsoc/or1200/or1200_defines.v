@@ -153,8 +153,8 @@
 //
 // (Generic seems to trigger a bug in the Cadence Ncsim simulator)
 //
-//`define OR1200_ASIC_MULTP2_32X32
-`define OR1200_GENERIC_MULTP2_32X32
+`define OR1200_ASIC_MULTP2_32X32
+// `define OR1200_GENERIC_MULTP2_32X32
 
 //
 // Size/type of insn/data cache if implemented

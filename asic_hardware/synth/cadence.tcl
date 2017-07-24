@@ -7,10 +7,16 @@
 # Set the search paths to the libraries and the HDL files
 # Remember that "." means your current directory. Add more directories
 # after the . if you like. 
-set_attribute hdl_search_path {../verilog/orpsoc/or1200/ ../verilog/orpsoc/arbiter ../verilog/orpsoc/ram_wb ../verilog/orpsoc/clkgen ../verilog/orpsoc/top  } 
-set_attribute lib_search_path {/home/cadlib/Processes/IBM/STANDARD_CELLS/Virage/cp65npksdsta03/liberty/logic_synth}
-set_attribute library [list "cp65npksdst_tt1p0v25c.lib"]
-# ../verilog/orpsoc/uart16550/
+set_attribute hdl_search_path {
+	../verilog/orpsoc/or1200 \
+	../verilog/orpsoc/arbiter \
+	../verilog/orpsoc/dbg_if \
+	../verilog/orpsoc/jtag_tap \
+	../verilog/orpsoc/ram_wb \
+	../verilog/orpsoc/clkgen \
+	../verilog/orpsoc/top} 
+set_attribute lib_search_path {XXX}
+set_attribute library [list "XXX.lib"]
 
 # Configure Super Threading Options
 # set_attribute max_cpus_per_server  1
@@ -42,7 +48,6 @@ set hdl_src_files [list "or1200_alu.v" \
 "or1200_ctrl.v" \
 "or1200_operandmuxes.v" \
 "or1200_amultp2_32x32.v" \
-"or1200_gmultp2_32x32.v" \
 "or1200_mult_mac.v" \
 "or1200_sprs.v" \
 "or1200_lsu.v" \
@@ -66,35 +71,35 @@ set hdl_src_files [list "or1200_alu.v" \
 "or1200_dmmu_top.v" \
 "or1200_iwb_biu.v" \
 "or1200_wb_biu.v" \
+"or1200_wbmux.v" \
 "or1200_qmem_top.v" \
 "or1200_sb_fifo.v" \
 "or1200_sb.v" \
 "or1200_du.v" \
-"or1200_top.v"\
 "or1200_tt.v" \
 "or1200_pm.v" \
 "or1200_pic.v" \
+"or1200_top.v"\
+"dbg_cpu_defines.v" \
+"dbg_cpu_registers.v" \
+"dbg_cpu.v" \
+"dbg_crc32_d1.v" \
+"dbg_defines.v" \
+"dbg_if.v" \
+"dbg_register.v" \
+"dbg_wb_defines.v" \
+"dbg_wb.v" \
+"jtag_tap.v" \
+"tap_defines.v" \
 "arbiter_bytebus.v" \
 "arbiter_dbus.v" \
 "arbiter_ibus.v" \
 "ram_wb.v" \
 "ram_wb_b3.v" \
-"clkgen.v" \
-"orpsoc-defines.v" \
-"synthesis-defines.v" \
-"timescale.v" \
 "orpsoc_top.v"];
 
-# "raminfr.v" \
-# "uart_defines.v" \
-# "uart_top.v" \
-# "uart_wb.v" \
-# "uart_regs.v" \
-# "uart_sync_flops.v" \
-# "uart_transmitter.v" \
-# "uart_receiver.v" \
-# "uart_tfifo.v" \
-# "uart_rfifo.v" \
+# "orpsoc-defines.v" \
+# "orpsoc-parameters.v" \
 
 set report_dir "synth_reports";# name of directory to place output files
 set netlist_dir "../netlist"  ;# name of directory to place output files

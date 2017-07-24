@@ -79,15 +79,15 @@ module orpsoc_top
  `endif
 `endif
   
-    sys_clk_in_p,sys_clk_in_n,
+    sys_clk_in_p, //,sys_clk_in_n,
 
     rst_n_pad_i  
-    , led_sr
+    , sr_out, sr, ex_insn, ex_pc
     );
 
 `include "orpsoc-params.v"   
 
-   input sys_clk_in_p,sys_clk_in_n;
+   input sys_clk_in_p;//sys_clk_in_n;
    
    input rst_n_pad_i;
    
@@ -177,7 +177,11 @@ module orpsoc_top
    output 		      eth0_rst_n_o;
  `endif
 `endif //  `ifdef ETH0
-   output         led_sr;
+
+output sr_out;
+output  [16:0]  sr;
+output  [31:0]    ex_insn;
+output  [31:0]    ex_pc;
 
    ////////////////////////////////////////////////////////////////////////
    //
@@ -193,28 +197,34 @@ module orpsoc_top
    wire 		      clk200;
    wire 		      dbg_tck;
 
+   assign wb_clk = sys_clk_in_p;
+   assign wb_rst = ~rst_n_pad_i; 
    
-   clkgen clkgen0
-     (
-      .sys_clk_in_p              (sys_clk_in_p),
-      .sys_clk_in_n              (sys_clk_in_n),
-
-      .wb_clk_o                  (wb_clk),
-      .wb_rst_o                  (wb_rst),
-
-`ifdef JTAG_DEBUG
-      .tck_pad_i                 (tck_pad_i),
-      .dbg_tck_o                 (dbg_tck),
+`ifdef JTAG_DEBUG   
+   assign dbg_tck = tck_pad_i;
 `endif
-`ifdef XILINX_DDR2
-      .ddr2_if_clk_o             (ddr2_if_clk),
-      .ddr2_if_rst_o             (ddr2_if_rst),
-      .clk200_o                  (clk200),
-`endif
+  
+//    clkgen clkgen0
+//      (
+//       .sys_clk_in_p              (sys_clk_in_p),
+//       .sys_clk_in_n              (sys_clk_in_n),
 
-      // Asynchronous active low reset
-      .rst_n_pad_i               (rst_n_pad_i)
-      );
+//       .wb_clk_o                  (wb_clk),
+//       .wb_rst_o                  (wb_rst),
+
+// `ifdef JTAG_DEBUG
+//       .tck_pad_i                 (tck_pad_i),
+//       .dbg_tck_o                 (dbg_tck),
+// `endif
+// `ifdef XILINX_DDR2
+//       .ddr2_if_clk_o             (ddr2_if_clk),
+//       .ddr2_if_rst_o             (ddr2_if_rst),
+//       .clk200_o                  (clk200),
+// `endif
+
+//       // Asynchronous active low reset
+//       .rst_n_pad_i               (rst_n_pad_i)
+//       );
 
    
    ////////////////////////////////////////////////////////////////////////
@@ -1017,8 +1027,12 @@ module orpsoc_top
 	 .mbist_ctrl_i			(0),
 	 */
 
-	.pm_cpustall_i			(1'b0)
-  , .led_sr(led_sr));
+	.pm_cpustall_i     (1'b0),
+  .sr_out(sr_out),
+  .sr(sr),
+  .ex_insn(ex_insn),
+  .ex_pc(ex_pc)
+  );
    
    ////////////////////////////////////////////////////////////////////////
    
