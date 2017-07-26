@@ -64,7 +64,7 @@ wire  [32-1:0]  ex_pc;
 // wire        from_scan_chip_rst_n;
 wire TO_PAD_sr_out;
 wire TO_PAD_sr_out1;
-reg TO_PAD_test_delay;
+// reg TO_PAD_test_delay;
 
 // Custom Testing IP Block 1
 // wire    test_out0;
@@ -196,28 +196,29 @@ orpsoc_top orpsoc(
 
 
 // OUTPUT_BUFFER outbuffer1 (.I(TO_PAD_scan_data_out), .Z(TO_PAD_scan_data_out1));
+OUTPUT_BUFFER outbuffer1 (.I(TO_PAD_scan_data_out), .Z(1'b1));
 OUTPUT_BUFFER outbuffer2 (.I(TO_PAD_sr_out), .Z(TO_PAD_sr_out1));
 OUTPUT_BUFFER outbuffer3 (.I(TO_PAD_div_clk), .Z(TO_PAD_div_clk1));
 
 
-assign TO_PAD_div_clk = from_scan_div_sel ? TO_PAD_test_delay : TO_PAD_RO;
-
+// assign TO_PAD_div_clk = from_scan_div_sel ? TO_PAD_test_delay : TO_PAD_RO;
+assign TO_PAD_div_clk = 1'b1;
 
 // INPUT Pads
-BC1820_PM_B PAD_u0_digin (.Z(FROM_PAD_tms_pad_i),       .PAD(dig_in0_tms_pad_i),       .ZDI(), .ZH(), .ZRI(), .A(1'b1), .DI(1'b0), .RG(1'b1), .RI(1'b1), .TS(1'b0));
-BC1820_PM_B PAD_u1_digin (.Z(FROM_PAD_tck_pad_i),       .PAD(dig_in1_tck_pad_i),       .ZDI(), .ZH(), .ZRI(), .A(1'b1), .DI(1'b0), .RG(1'b1), .RI(1'b1), .TS(1'b0));
-BC1820_PM_B PAD_u2_digin (.Z(FROM_PAD_tdi_pad_i),       .PAD(dig_in2_tdi_pad_i),       .ZDI(), .ZH(), .ZRI(), .A(1'b1), .DI(1'b0), .RG(1'b1), .RI(1'b1), .TS(1'b0));
-BC1820_PM_B PAD_u3_digin (.Z(FROM_PAD_scan_phi),        .PAD(dig_in3_scan_phi),        .ZDI(), .ZH(), .ZRI(), .A(1'b1), .DI(1'b0), .RG(1'b1), .RI(1'b1), .TS(1'b0));
-BC1820_PM_B PAD_u4_digin (.Z(FROM_PAD_scan_phi_bar),    .PAD(dig_in4_scan_phi_bar),    .ZDI(), .ZH(), .ZRI(), .A(1'b1), .DI(1'b0), .RG(1'b1), .RI(1'b1), .TS(1'b0));
-BC1820_PM_B PAD_u5_digin (.Z(FROM_PAD_scan_data_in),    .PAD(dig_in5_scan_data_in),    .ZDI(), .ZH(), .ZRI(), .A(1'b1), .DI(1'b0), .RG(1'b1), .RI(1'b1), .TS(1'b0));
-BC1820_PM_B PAD_u6_digin (.Z(FROM_PAD_scan_load_chip),  .PAD(dig_in6_scan_load_chip),  .ZDI(), .ZH(), .ZRI(), .A(1'b1), .DI(1'b0), .RG(1'b1), .RI(1'b1), .TS(1'b0));
-BC1820_PM_B PAD_u7_digin (.Z(FROM_PAD_scan_load_chain), .PAD(dig_in7_scan_load_chain), .ZDI(), .ZH(), .ZRI(), .A(1'b1), .DI(1'b0), .RG(1'b1), .RI(1'b1), .TS(1'b0));
+BC1820_PM_B PAD_u0_digin (.Z(FROM_PAD_tms_pad_i), .PAD(dig_in0_tms_pad_i),       .ZDI(), .ZH(), .ZRI(), .A(), .DI(1'b0), .RG(1'b1), .RI(1'b1), .TS(1'b0));
+BC1820_PM_B PAD_u1_digin (.Z(FROM_PAD_tck_pad_i), .PAD(dig_in1_tck_pad_i),       .ZDI(), .ZH(), .ZRI(), .A(), .DI(1'b0), .RG(1'b1), .RI(1'b1), .TS(1'b0));
+BC1820_PM_B PAD_u2_digin (.Z(FROM_PAD_tdi_pad_i), .PAD(dig_in2_tdi_pad_i),       .ZDI(), .ZH(), .ZRI(), .A(), .DI(1'b0), .RG(1'b1), .RI(1'b1), .TS(1'b0));
+BC1820_PM_B PAD_u3_digin (.Z(),                   .PAD(dig_in3_scan_phi),        .ZDI(), .ZH(), .ZRI(), .A(), .DI(1'b0), .RG(1'b1), .RI(1'b1), .TS(1'b0));
+BC1820_PM_B PAD_u4_digin (.Z(),                   .PAD(dig_in4_scan_phi_bar),    .ZDI(), .ZH(), .ZRI(), .A(), .DI(1'b0), .RG(1'b1), .RI(1'b1), .TS(1'b0));
+BC1820_PM_B PAD_u5_digin (.Z(),                   .PAD(dig_in5_scan_data_in),    .ZDI(), .ZH(), .ZRI(), .A(), .DI(1'b0), .RG(1'b1), .RI(1'b1), .TS(1'b0));
+BC1820_PM_B PAD_u6_digin (.Z(),                   .PAD(dig_in6_scan_load_chip),  .ZDI(), .ZH(), .ZRI(), .A(), .DI(1'b0), .RG(1'b1), .RI(1'b1), .TS(1'b0));
+BC1820_PM_B PAD_u7_digin (.Z(),                   .PAD(dig_in7_scan_load_chain), .ZDI(), .ZH(), .ZRI(), .A(), .DI(1'b0), .RG(1'b1), .RI(1'b1), .TS(1'b0));
 
 // OUTPUT Pads
-BC1820_PM_B PAD_u0_digout (.Z(), .PAD(dig_out0_tdo_pad_o),     .ZDI(), .ZH(), .ZRI(), .A(TO_PAD_tdo_pad_o),      .DI(1'b1), .RG(1'b1), .RI(), .TS(1'b1));
-BC1820_PM_B PAD_u1_digout (.Z(), .PAD(dig_out1_scan_data_out), .ZDI(), .ZH(), .ZRI(), .A(TO_PAD_scan_data_out1), .DI(1'b1), .RG(1'b1), .RI(), .TS(1'b1));
-BC1820_PM_B PAD_u3_digout (.Z(), .PAD(dig_out3_div_clk),       .ZDI(), .ZH(), .ZRI(), .A(TO_PAD_div_clk1),       .DI(1'b1), .RG(1'b1), .RI(), .TS(1'b1));
-BC1820_PM_B PAD_u4_digout (.Z(), .PAD(dig_out4_sr_out),        .ZDI(), .ZH(), .ZRI(), .A(TO_PAD_sr_out1),        .DI(1'b1), .RG(1'b1), .RI(), .TS(1'b1));
+BC1820_PM_B PAD_u0_digout (.Z(), .PAD(dig_out0_tdo_pad_o),     .ZDI(), .ZH(), .ZRI(), .A(TO_PAD_tdo_pad_o),      .DI(1'b1), .RG(1'b1), .RI(1'b0), .TS(1'b1));
+BC1820_PM_B PAD_u1_digout (.Z(), .PAD(dig_out1_scan_data_out), .ZDI(), .ZH(), .ZRI(), .A(TO_PAD_scan_data_out1), .DI(1'b1), .RG(1'b1), .RI(1'b0), .TS(1'b1));
+BC1820_PM_B PAD_u3_digout (.Z(), .PAD(dig_out3_div_clk),       .ZDI(), .ZH(), .ZRI(), .A(TO_PAD_div_clk1),       .DI(1'b1), .RG(1'b1), .RI(1'b0), .TS(1'b1));
+BC1820_PM_B PAD_u4_digout (.Z(), .PAD(dig_out4_sr_out),        .ZDI(), .ZH(), .ZRI(), .A(TO_PAD_sr_out1),        .DI(1'b1), .RG(1'b1), .RI(1'b0), .TS(1'b1));
 
 // Power/Ground Pads
 VDD_PM_A PAD_POWER_VDD1  ();
@@ -236,8 +237,8 @@ module OUTPUT_BUFFER (I, Z);
     input I;
     output Z;
 
-    INVX4BA10TR   XOBSB1 (.A(I), .Y(out_buf_1) );
-    INVX9BA10TR   XOBSB4 (.A(out_buf_1), .Y(Z) );
+    SEN_INV_4   XOBSB1 (.A(I), .X(out_buf_1) );
+    SEN_INV_10  XOBSB4 (.A(out_buf_1), .X(Z) );
 endmodule
 
 

@@ -3,7 +3,7 @@
 # Last Edited: May 2014
 ###################################
 set syn_root  /home/ttrippel/A2/asic_hardware/netlist
-set tech_root XXX
+set tech_root /home/cadlib/Processes/IBM/STANDARD_CELLS/Virage/cp65npksdsta03
 set par_root  /home/ttrippel/A2/asic_hardware/par
 # set SRAM_PATH /XXX/sram
 
@@ -42,7 +42,7 @@ proc connect_std_cells_to_power { } {
 ###################################
 
 # Load Design
-source ./new_par.globals
+source ./par.globals
 init_design
 #source ./apr_views.tcl
 ###################################
@@ -150,102 +150,102 @@ setAddStripeMode  -remove_floating_stripe_over_block 1 -merge_with_all_layers 1 
 # #globalNetConnect ana_test_bias -type pgpin -pin AVDD -inst PAD_ANA1 -verbose
 # #globalNetConnect ana_test_bias -type pgpin -pin Stress_Bias -inst test_structure  -verbose
 
-connect_std_cells_to_power
-# ######################################################################################################
-# setAnalog -net ana_*
-# setAttribute -net ana_* -preferred_extra_space 3
-# #sroute -nets {ana_test_bias} -padPinPortConnect allGeom  -area {1050 200 1250 1300}
+# connect_std_cells_to_power
+# # ######################################################################################################
+# # setAnalog -net ana_*
+# # setAttribute -net ana_* -preferred_extra_space 3
+# # #sroute -nets {ana_test_bias} -padPinPortConnect allGeom  -area {1050 200 1250 1300}
 
-addStripe -nets {CVDD VSS} -layer M8 -direction {vertical} -start_x 100 -stop_x 870 -width 6 -spacing 6 -allow_jog_block_ring 0 -stacked_via_bottom_layer M7 -stacked_via_top_layer M9 -snap_wire_center_to_grid Grid -set_to_set_distance 100
+# addStripe -nets {CVDD VSS} -layer M8 -direction {vertical} -start_x 100 -stop_x 870 -width 6 -spacing 6 -allow_jog_block_ring 0 -stacked_via_bottom_layer M7 -stacked_via_top_layer M9 -snap_wire_center_to_grid Grid -set_to_set_distance 100
 
-addStripe -nets {CVDD VSS} -layer M7 -direction {horizontal} -width 6  -spacing 6 -allow_jog_block_ring 0 -stacked_via_bottom_layer M6 -stacked_via_top_layer M8  -snap_wire_center_to_grid Grid -set_to_set_distance 200 -start_y 180.8
+# addStripe -nets {CVDD VSS} -layer M7 -direction {horizontal} -width 6  -spacing 6 -allow_jog_block_ring 0 -stacked_via_bottom_layer M6 -stacked_via_top_layer M8  -snap_wire_center_to_grid Grid -set_to_set_distance 200 -start_y 180.8
 
-addStripe -nets {CVDD VSS} -layer M6 -direction {vertical} -start_x 100 -stop_x 870 -width 5 -spacing 6.2 -allow_jog_block_ring 0 -stacked_via_bottom_layer M5 -stacked_via_top_layer M7 -snap_wire_center_to_grid Grid -set_to_set_distance 100
+# addStripe -nets {CVDD VSS} -layer M6 -direction {vertical} -start_x 100 -stop_x 870 -width 5 -spacing 6.2 -allow_jog_block_ring 0 -stacked_via_bottom_layer M5 -stacked_via_top_layer M7 -snap_wire_center_to_grid Grid -set_to_set_distance 100
 
-addStripe -nets {CVDD VSS} -layer M5 -direction {horizontal} -width 5  -spacing 6 -allow_jog_block_ring 0 -stacked_via_bottom_layer M4 -stacked_via_top_layer M6  -snap_wire_center_to_grid Grid -set_to_set_distance 100 -start_y 160
+# addStripe -nets {CVDD VSS} -layer M5 -direction {horizontal} -width 5  -spacing 6 -allow_jog_block_ring 0 -stacked_via_bottom_layer M4 -stacked_via_top_layer M6  -snap_wire_center_to_grid Grid -set_to_set_distance 100 -start_y 160
 
-editCutWire -x1 817.2955 -y1 1137.7205 -x2 817.2955 -y2 100.717
+# editCutWire -x1 817.2955 -y1 1137.7205 -x2 817.2955 -y2 100.717
 
-selectWire 817.2950 160.0000 1200.5000 165.0000 5 CVDD
-selectWire 817.2950 171.0000 1180.5000 176.0000 5 VSS
-selectWire 817.2950 271.0000 1180.5000 276.0000 5 VSS
-selectWire 817.2950 260.0000 1200.5000 265.0000 5 CVDD
-selectWire 817.2950 371.0000 1180.5000 376.0000 5 VSS
-selectWire 817.2950 360.0000 1200.5000 365.0000 5 CVDD
-selectWire 817.2950 460.0000 1152.2000 465.0000 5 CVDD
-selectWire 817.2950 471.0000 1162.2500 476.0000 5 VSS
-selectWire 1147.2000 446.6000 1152.2000 465.0000 6 CVDD
-selectWire 1147.2000 446.6000 1200.5000 451.6000 5 CVDD
-selectWire 817.2950 660.0000 1200.5000 665.0000 5 CVDD
-selectWire 817.2950 671.0000 1180.5000 676.0000 5 VSS
-selectWire 817.2950 560.0000 1200.5000 565.0000 5 CVDD
-selectWire 817.2950 571.0000 1180.5000 576.0000 5 VSS
-selectWire 817.2950 760.0000 1200.5000 765.0000 5 CVDD
-selectWire 817.2950 771.0000 1180.5000 776.0000 5 VSS
-selectWire 817.2950 860.0000 1200.5000 865.0000 5 CVDD
-selectWire 817.2950 871.0000 1180.5000 876.0000 5 VSS
-selectWire 817.2950 960.0000 1200.5000 965.0000 5 CVDD
-selectWire 1032.1900 971.0000 1180.5000 976.0000 5 VSS
-selectWire 817.2950 1060.0000 1192.2000 1065.0000 5 CVDD
-selectWire 817.2950 1071.0000 1180.5000 1076.0000 5 VSS
-deleteSelectedFromFPlan
-selectWire 817.2950 971.0000 997.7500 976.0000 5 VSS
-deleteSelectedFromFPlan
-
-
-#addStripe -nets {CVDD VSS} -layer M4 -direction {vertical} -start_x 980 -stop_x 1000 -width 5 -spacing 5 -allow_jog_block_ring 0 -stacked_via_bottom_layer M3 -stacked_via_top_layer M5 -snap_wire_center_to_grid Grid -set_to_set_distance 100
-
-#addStripe -nets {VDD VSS} -layer M4 -direction {vertical} -start_x 0 -stop_x 1500 -width 5 -spacing 5 -allow_jog_block_ring 0 -stacked_via_bottom_layer M3 -stacked_via_top_layer M5 -snap_wire_center_to_grid Grid -set_to_set_distance 60
+# selectWire 817.2950 160.0000 1200.5000 165.0000 5 CVDD
+# selectWire 817.2950 171.0000 1180.5000 176.0000 5 VSS
+# selectWire 817.2950 271.0000 1180.5000 276.0000 5 VSS
+# selectWire 817.2950 260.0000 1200.5000 265.0000 5 CVDD
+# selectWire 817.2950 371.0000 1180.5000 376.0000 5 VSS
+# selectWire 817.2950 360.0000 1200.5000 365.0000 5 CVDD
+# selectWire 817.2950 460.0000 1152.2000 465.0000 5 CVDD
+# selectWire 817.2950 471.0000 1162.2500 476.0000 5 VSS
+# selectWire 1147.2000 446.6000 1152.2000 465.0000 6 CVDD
+# selectWire 1147.2000 446.6000 1200.5000 451.6000 5 CVDD
+# selectWire 817.2950 660.0000 1200.5000 665.0000 5 CVDD
+# selectWire 817.2950 671.0000 1180.5000 676.0000 5 VSS
+# selectWire 817.2950 560.0000 1200.5000 565.0000 5 CVDD
+# selectWire 817.2950 571.0000 1180.5000 576.0000 5 VSS
+# selectWire 817.2950 760.0000 1200.5000 765.0000 5 CVDD
+# selectWire 817.2950 771.0000 1180.5000 776.0000 5 VSS
+# selectWire 817.2950 860.0000 1200.5000 865.0000 5 CVDD
+# selectWire 817.2950 871.0000 1180.5000 876.0000 5 VSS
+# selectWire 817.2950 960.0000 1200.5000 965.0000 5 CVDD
+# selectWire 1032.1900 971.0000 1180.5000 976.0000 5 VSS
+# selectWire 817.2950 1060.0000 1192.2000 1065.0000 5 CVDD
+# selectWire 817.2950 1071.0000 1180.5000 1076.0000 5 VSS
+# deleteSelectedFromFPlan
+# selectWire 817.2950 971.0000 997.7500 976.0000 5 VSS
+# deleteSelectedFromFPlan
 
 
-addStripe -nets {VDD VSS} -layer M8 -direction {vertical} -start_x 870 -stop_x 1200 -width 5 -spacing 5 -allow_jog_block_ring 0 -stacked_via_bottom_layer M7 -stacked_via_top_layer M9 -snap_wire_center_to_grid Grid -set_to_set_distance 200
+# #addStripe -nets {CVDD VSS} -layer M4 -direction {vertical} -start_x 980 -stop_x 1000 -width 5 -spacing 5 -allow_jog_block_ring 0 -stacked_via_bottom_layer M3 -stacked_via_top_layer M5 -snap_wire_center_to_grid Grid -set_to_set_distance 100
 
-addStripe -nets {VDD} -layer M7 -direction {horizontal} -width 5  -spacing 5 -allow_jog_block_ring 0 -stacked_via_bottom_layer M6 -stacked_via_top_layer M8 -snap_wire_center_to_grid Grid -set_to_set_distance 200 -start_y 155.6
-
-addStripe -nets {VDD VSS} -layer M6 -direction {vertical} -start_x 870 -stop_x 1200 -width 5 -spacing 5 -allow_jog_block_ring 0 -stacked_via_bottom_layer M3 -stacked_via_top_layer M7 -snap_wire_center_to_grid Grid -set_to_set_distance 100
+# #addStripe -nets {VDD VSS} -layer M4 -direction {vertical} -start_x 0 -stop_x 1500 -width 5 -spacing 5 -allow_jog_block_ring 0 -stacked_via_bottom_layer M3 -stacked_via_top_layer M5 -snap_wire_center_to_grid Grid -set_to_set_distance 60
 
 
-#addStripe -nets {VDD VSS} -layer M5 -direction {horizontal} -width 3  -spacing 3 -allow_jog_block_ring 0 -stacked_via_bottom_layer M4 -stacked_via_top_layer M6 -snap_wire_center_to_grid Grid -set_to_set_distance 60 -start_y 20
-#addStripe -nets {VDD VSS} -layer M5 -direction {horizontal} -width 3  -spacing 3 -allow_jog_block_ring 0 -stacked_via_bottom_layer M4 -stacked_via_top_layer M6  -snap_wire_center_to_grid Grid -set_to_set_distance 50
+# addStripe -nets {VDD VSS} -layer M8 -direction {vertical} -start_x 870 -stop_x 1200 -width 5 -spacing 5 -allow_jog_block_ring 0 -stacked_via_bottom_layer M7 -stacked_via_top_layer M9 -snap_wire_center_to_grid Grid -set_to_set_distance 200
+
+# addStripe -nets {VDD} -layer M7 -direction {horizontal} -width 5  -spacing 5 -allow_jog_block_ring 0 -stacked_via_bottom_layer M6 -stacked_via_top_layer M8 -snap_wire_center_to_grid Grid -set_to_set_distance 200 -start_y 155.6
+
+# addStripe -nets {VDD VSS} -layer M6 -direction {vertical} -start_x 870 -stop_x 1200 -width 5 -spacing 5 -allow_jog_block_ring 0 -stacked_via_bottom_layer M3 -stacked_via_top_layer M7 -snap_wire_center_to_grid Grid -set_to_set_distance 100
 
 
-# Assign VDD/VSS
-#clearGlobalNets
-connect_std_cells_to_power
-
-# saveDesign "${top_level}.pads_routed.enc"
-
-#sroute -connect { corePin } -layerChangeRange { M1 M8 } -blockPinTarget { nearestTarget } -deleteExistingRoutes -checkAlignedSecondaryPin 1 -allowJogging 0 -crossoverViaBottomLayer M1 -allowLayerChange 1 -targetViaTopLayer M8 -crossoverViaTopLayer M8 -targetViaBottomLayer M1 -area { 817 48 1200 1250 } -nets { VDD VSS } -viaConnectToShape { ring stripe }
-
-#VDDTEST
-addStripe -nets {VDDTEST VSS} -layer M7 -direction {horizontal} -width 5  -spacing 5 -allow_jog_block_ring 0 -stacked_via_bottom_layer M4 -stacked_via_top_layer M8  -snap_wire_center_to_grid Grid -set_to_set_distance 100 -start_y 1030 -stop_y 1060
-
-addStripe -nets {VDDTEST VSS} -layer M4 -direction {vertical} -start_x 1100 -width 5 -spacing 5 -allow_jog_block_ring 0 -stacked_via_bottom_layer M3 -stacked_via_top_layer M5 -snap_wire_center_to_grid Grid -set_to_set_distance 90
-addStripe -nets {VDDTEST VSS} -layer M6 -direction {vertical} -start_x 1010 -width 5 -spacing 5 -allow_jog_block_ring 0 -stacked_via_bottom_layer M5 -stacked_via_top_layer M7 -snap_wire_center_to_grid Grid -set_to_set_distance 200
+# #addStripe -nets {VDD VSS} -layer M5 -direction {horizontal} -width 3  -spacing 3 -allow_jog_block_ring 0 -stacked_via_bottom_layer M4 -stacked_via_top_layer M6 -snap_wire_center_to_grid Grid -set_to_set_distance 60 -start_y 20
+# #addStripe -nets {VDD VSS} -layer M5 -direction {horizontal} -width 3  -spacing 3 -allow_jog_block_ring 0 -stacked_via_bottom_layer M4 -stacked_via_top_layer M6  -snap_wire_center_to_grid Grid -set_to_set_distance 50
 
 
-windowSelect 1152.300 -113.496 753.006 -225.299
-uiSetTool cutWire
-editCutWire -x1 1009.6995 -y1 969.8695 -x2 1025.2125 -y2 969.8695
-uiSetTool select
-selectWire 1010.0000 12.0000 1015.0000 969.8700 6 VDDTEST
-deleteSelectedFromFPlan
-selectWire 1020.0000 22.0000 1025.0000 969.8700 6 VSS
-deleteSelectedFromFPlan
-uiSetTool cutWire
-editCutWire -x1 1099.371 -y1 969.393 -x2 1116.4805 -y2 969.393
-uiSetTool select
-selectWire 1100.0000 12.0000 1105.0000 969.3950 4 VDDTEST
-deleteSelectedFromFPlan
-selectWire 1110.0000 22.0000 1115.0000 969.3950 4 VSS
-deleteSelectedFromFPlan
+# # Assign VDD/VSS
+# #clearGlobalNets
+# connect_std_cells_to_power
 
-#sroute -connect { corePin } -layerChangeRange { M1 M8 } -blockPinTarget { nearestTarget } -allowJogging 0 -crossoverViaBottomLayer M1 -allowLayerChange 1 -targetViaTopLayer M8 -crossoverViaTopLayer M8 -targetViaBottomLayer M1 -nets { VDD VSS } -area {817 48 1200 1250} -connectInsideArea
+# # saveDesign "${top_level}.pads_routed.enc"
 
-sroute -connect { corePin } -layerChangeRange { M1 M6 } -allowJogging 0 -crossoverViaBottomLayer M1 -allowLayerChange 1 -targetViaTopLayer M6 -crossoverViaTopLayer M6 -area { 817 48 1173 1250 } -targetViaBottomLayer M1 -nets { VDD VSS } -connectInsideArea
+# #sroute -connect { corePin } -layerChangeRange { M1 M8 } -blockPinTarget { nearestTarget } -deleteExistingRoutes -checkAlignedSecondaryPin 1 -allowJogging 0 -crossoverViaBottomLayer M1 -allowLayerChange 1 -targetViaTopLayer M8 -crossoverViaTopLayer M8 -targetViaBottomLayer M1 -area { 817 48 1200 1250 } -nets { VDD VSS } -viaConnectToShape { ring stripe }
 
-sroute -connect { corePin } -allowJogging 0 -nets { VDD VSS } -area {0 1208 850 1250} -connectInsideArea
-sroute -connect { corePin } -allowJogging 0 -nets { VDD VSS } -area {0 0 850 78} -connectInsideArea
+# #VDDTEST
+# addStripe -nets {VDDTEST VSS} -layer M7 -direction {horizontal} -width 5  -spacing 5 -allow_jog_block_ring 0 -stacked_via_bottom_layer M4 -stacked_via_top_layer M8  -snap_wire_center_to_grid Grid -set_to_set_distance 100 -start_y 1030 -stop_y 1060
+
+# addStripe -nets {VDDTEST VSS} -layer M4 -direction {vertical} -start_x 1100 -width 5 -spacing 5 -allow_jog_block_ring 0 -stacked_via_bottom_layer M3 -stacked_via_top_layer M5 -snap_wire_center_to_grid Grid -set_to_set_distance 90
+# addStripe -nets {VDDTEST VSS} -layer M6 -direction {vertical} -start_x 1010 -width 5 -spacing 5 -allow_jog_block_ring 0 -stacked_via_bottom_layer M5 -stacked_via_top_layer M7 -snap_wire_center_to_grid Grid -set_to_set_distance 200
+
+
+# windowSelect 1152.300 -113.496 753.006 -225.299
+# uiSetTool cutWire
+# editCutWire -x1 1009.6995 -y1 969.8695 -x2 1025.2125 -y2 969.8695
+# uiSetTool select
+# selectWire 1010.0000 12.0000 1015.0000 969.8700 6 VDDTEST
+# deleteSelectedFromFPlan
+# selectWire 1020.0000 22.0000 1025.0000 969.8700 6 VSS
+# deleteSelectedFromFPlan
+# uiSetTool cutWire
+# editCutWire -x1 1099.371 -y1 969.393 -x2 1116.4805 -y2 969.393
+# uiSetTool select
+# selectWire 1100.0000 12.0000 1105.0000 969.3950 4 VDDTEST
+# deleteSelectedFromFPlan
+# selectWire 1110.0000 22.0000 1115.0000 969.3950 4 VSS
+# deleteSelectedFromFPlan
+
+# #sroute -connect { corePin } -layerChangeRange { M1 M8 } -blockPinTarget { nearestTarget } -allowJogging 0 -crossoverViaBottomLayer M1 -allowLayerChange 1 -targetViaTopLayer M8 -crossoverViaTopLayer M8 -targetViaBottomLayer M1 -nets { VDD VSS } -area {817 48 1200 1250} -connectInsideArea
+
+# sroute -connect { corePin } -layerChangeRange { M1 M6 } -allowJogging 0 -crossoverViaBottomLayer M1 -allowLayerChange 1 -targetViaTopLayer M6 -crossoverViaTopLayer M6 -area { 817 48 1173 1250 } -targetViaBottomLayer M1 -nets { VDD VSS } -connectInsideArea
+
+# sroute -connect { corePin } -allowJogging 0 -nets { VDD VSS } -area {0 1208 850 1250} -connectInsideArea
+# sroute -connect { corePin } -allowJogging 0 -nets { VDD VSS } -area {0 0 850 78} -connectInsideArea
 
 
 #sroute -nets {VSS VDD} -connect {blockPin} -allowLayerChange {1} -corePinLayer {1} -corePinMaxViaWidth 90 -crossoverViaBottomLayer 1 -crossoverViaTopLayer 2 -targetViaBottomLayer 1 -targetViaTopLayer 2 -blockPinMaxLayer 2 -blockPinMinLayer 1 -corePinNoRouteEmptyRows -blockPinRouteWithPinWidth -blockPinTarget {nearestRingStripe} -verbose
@@ -259,49 +259,49 @@ sroute -connect { corePin } -allowJogging 0 -nets { VDD VSS } -area {0 0 850 78}
 # Load pins
 #loadIoFile ${top_level}.io
 # Place welltaps 
-addWellTap -cell SEN_TAP_DS -maxGap 27 -prefix SEN_TAP
-#-pitch 10
+# addWellTap -cell SEN_TAP_DS -maxGap 27 -prefix SEN_TAP
+# #-pitch 10
 
-# saveDesign "${top_level}.power.enc"
-createObstruct 870 56 1120 320
+# # saveDesign "${top_level}.power.enc"
+# createObstruct 870 56 1120 320
 
-# set_dont_touch [get_nets ana*]
-# set_dont_touch [get_cells -hierarchical *DTL_*]
-# set_dont_touch [get_cells RNG_top/DUT*/D*/DT_ro*]
-# set_dont_touch [get_cells outbuffer*]
+# # set_dont_touch [get_nets ana*]
+# # set_dont_touch [get_cells -hierarchical *DTL_*]
+# # set_dont_touch [get_cells RNG_top/DUT*/D*/DT_ro*]
+# # set_dont_touch [get_cells outbuffer*]
 
-# set_false_path -from [get_ports *scan_* ]
-# set_false_path -to [get_ports *scan_* ]
-# #set_false_path -to [get_ports RNG_top/*count_MSB_out]
-# #set_false_path -through [get_cells */*/*/*DT*]
-# #set_false_path -through [get_cells */*/*/pfd* ]
-# #set_false_path -through [get_cells */*/*/pg* ]
-# #set_false_path -through [get_cells */msb_divider ]
-# #set_false_path -through [get_cells RNG_top/msb_divider/I0_0_/I1 ]
-# #set_false_path -through [get_nets RNG_top/*/rng* ]
-# #set_false_path -through [get_nets RNG_top/*/count_MSB_d2 ]
+# # set_false_path -from [get_ports *scan_* ]
+# # set_false_path -to [get_ports *scan_* ]
+# # #set_false_path -to [get_ports RNG_top/*count_MSB_out]
+# # #set_false_path -through [get_cells */*/*/*DT*]
+# # #set_false_path -through [get_cells */*/*/pfd* ]
+# # #set_false_path -through [get_cells */*/*/pg* ]
+# # #set_false_path -through [get_cells */msb_divider ]
+# # #set_false_path -through [get_cells RNG_top/msb_divider/I0_0_/I1 ]
+# # #set_false_path -through [get_nets RNG_top/*/rng* ]
+# # #set_false_path -through [get_nets RNG_top/*/count_MSB_d2 ]
 
 
-setDesignMode -flowEffort high -process 65
-setPrerouteAsObs {1}
-# timeDesign -prePlace
+# setDesignMode -flowEffort high -process 65
+# setPrerouteAsObs {1}
+# # timeDesign -prePlace
 
-setPlaceMode -maxRouteLayer 8
-#setPlaceMode -congEffort high
-placeDesign -noPrePlaceOpt
-# timeDesign -preCTS
+# setPlaceMode -maxRouteLayer 8
+# #setPlaceMode -congEffort high
+# placeDesign -noPrePlaceOpt
+# # timeDesign -preCTS
 
-setOptMode -holdTargetSlack 0.10 -holdFixingEffort high
-setOptMode -addInst true -addInstancePrefix PRECTS
-optDesign -preCTS
-congRepair
+# setOptMode -holdTargetSlack 0.10 -holdFixingEffort high
+# setOptMode -addInst true -addInstancePrefix PRECTS
+# optDesign -preCTS
+# congRepair
 
-addTieHiLo -cell "SEN_TIE1_1 SEN_TIE0_1"
+# addTieHiLo -cell "SEN_TIE1_1 SEN_TIE0_1"
 
-connect_std_cells_to_power
-# saveDesign "${top_level}.placed.enc"
-deleteEmptyModule
-stop
+# connect_std_cells_to_power
+# # saveDesign "${top_level}.placed.enc"
+# deleteEmptyModule
+# stop
 
 # #####################################
 # # Clock Tree Synthesis

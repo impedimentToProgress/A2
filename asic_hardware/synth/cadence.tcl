@@ -15,8 +15,12 @@ set_attribute hdl_search_path {
 	../verilog/orpsoc/ram_wb \
 	../verilog/orpsoc/clkgen \
 	../verilog/orpsoc/top} 
-set_attribute lib_search_path {/home/cadlib/Processes/IBM/STANDARD_CELLS/Virage/cp65npksdsta03/liberty/logic_synth}
-set_attribute library [list "cp65npksdst_tt1p0v25c.lib"]
+# set_attribute lib_search_path {/home/cadlib/Processes/IBM/STANDARD_CELLS/Virage/cp65npksdsta03/liberty/logic_synth}
+# set_attribute library [list "cp65npksdst_tt1p0v25c.lib"]
+# set_attribute lib_search_path {/home/cadlib/Processes/IBM/DIGITAL_DESIGN/CMRF7SF/std_cell/v.20111130/synopsys/nom}
+# set_attribute library [list "PnomV180T025_STD_CELL_7RF.lib"]
+set_attribute lib_search_path {/home/cadlib/Processes/IBM/STANDARD_CELLS/ARM/12s0/ibm/soi12s0/sc12_base_v31_rvt/2009q1v2}
+set_attribute library [list "sc12_base_v31_rvt_soi12s0_ss_nominal_max_0p81v_125c_mns.lib"]
 
 # Configure Super Threading Options
 # set_attribute max_cpus_per_server  1
@@ -105,8 +109,8 @@ set report_dir "synth_reports";# name of directory to place output files
 set netlist_dir "../netlist"  ;# name of directory to place output files
 set top_level "orpsoc_top"    ;# name of top level module
 
-# set clk_period 5;  # 5 ns clock period = 200 MHz
-set clk_period 3;  # 3 ns clock period = 333.33 MHz
+set clk_period 10;  # 10 ns clock period = 100 MHz
+# set clk_period 3;  # 3 ns clock period = 333.33 MHz
 set clk_uncertainty 0.3
 set clk_transition 0.1
 set clk_latency 0.05
@@ -162,8 +166,12 @@ set_ideal_network [get_ports $clk_port]
 set_max_transition 0.100 $top_level
 set_max_fanout 20 $top_level
 
-set_driving_cell -lib_cell SEN_BUF_AS_1 [all_inputs]
-set_driving_cell -lib_cell SEN_BUF_AS_4 [get_ports $clk_port]
+# set_driving_cell -lib_cell SEN_BUF_AS_1 [all_inputs]
+# set_driving_cell -lib_cell SEN_BUF_AS_4 [get_ports $clk_port]
+# set_driving_cell -lib_cell BUFFER_C [all_inputs]
+# set_driving_cell -lib_cell BUFFER_K [get_ports $clk_port]
+set_driving_cell -lib_cell BUF_X1B_A12TR [all_inputs]
+set_driving_cell -lib_cell BUF_X4B_A12TR [get_ports $clk_port]
 
 set_output_delay $typical_output_delay -clock $clk_name [all_outputs] 
 
