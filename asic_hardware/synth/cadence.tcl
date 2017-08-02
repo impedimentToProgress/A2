@@ -8,6 +8,7 @@
 # Remember that "." means your current directory. Add more directories
 # after the . if you like. 
 set_attribute hdl_search_path {
+	../verilog/orpsoc \
 	../verilog/orpsoc/or1200 \
 	../verilog/orpsoc/arbiter \
 	../verilog/orpsoc/dbg_if \
@@ -19,7 +20,7 @@ set_attribute hdl_search_path {
 # set_attribute library [list "cp65npksdst_tt1p0v25c.lib"]
 # set_attribute lib_search_path {/home/cadlib/Processes/IBM/DIGITAL_DESIGN/CMRF7SF/std_cell/v.20111130/synopsys/nom}
 # set_attribute library [list "PnomV180T025_STD_CELL_7RF.lib"]
-set_attribute lib_search_path {/home/cadlib/Processes/IBM/STANDARD_CELLS/ARM/12s0/ibm/soi12s0/sc12_base_v31_rvt/2009q1v2}
+set_attribute lib_search_path {/home/cadlib/Processes/IBM/STANDARD_CELLS/ARM/12s0/ibm/soi12s0/sc12_base_v31_rvt/2009q1v2/lib}
 set_attribute library [list "sc12_base_v31_rvt_soi12s0_ss_nominal_max_0p81v_125c_mns.lib"]
 
 # Configure Super Threading Options
@@ -101,9 +102,6 @@ set hdl_src_files [list "or1200_alu.v" \
 "ram_wb.v" \
 "ram_wb_b3.v" \
 "orpsoc_top.v"];
-
-# "orpsoc-defines.v" \
-# "orpsoc-parameters.v" \
 
 set report_dir "synth_reports";# name of directory to place output files
 set netlist_dir "../netlist"  ;# name of directory to place output files
@@ -192,8 +190,8 @@ synthesize -to_mapped -effort high
 # remove_assigns_without_optimization -dont_skip_unconstrained_paths -design ${top_level}
 
 # Write out the structural Verilog and sdc files
-write_hdl -mapped   > ${netlist_dir}/${top_level}.nl.v
-write_sdc           > ${netlist_dir}/${top_level}.sdc
+write_hdl -mapped > ${netlist_dir}/${top_level}.nl.v
+write_sdc -no_split -version 1.3 > ${netlist_dir}/${top_level}.sdc
 
 # Write out the reports
 check_design > ${report_dir}/${top_level}_main.rpt

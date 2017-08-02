@@ -5,20 +5,28 @@
 set syn_root  /home/ttrippel/A2/asic_hardware/netlist
 set tech_root /home/cadlib/Processes/IBM/STANDARD_CELLS/Virage/cp65npksdsta03
 set par_root  /home/ttrippel/A2/asic_hardware/par
-# set SRAM_PATH /XXX/sram
 
 ###################################
 # CONFIG
 ###################################
 set top_level     MAL_TOP
-set block_width   430
+set process       45;  # nm
+set io_pad_width  130; # width of IO pad in microns
+
+# Die Dimensions
+set block_width   540
 set block_height  400
-set left_offset   50
-set right_offset  55
-set top_offset    50
-set bottom_offset 50
-# Allow manual footprint declarations in conf file
-#set dbgGPSAutoCellFunction 0
+
+# Core Offsets
+set left_offset   30
+set right_offset  40
+set top_offset    30
+set bottom_offset 30
+
+# Power Stripe Offsets and Spacing
+set pstripe_spacing 50
+set pstripe_start   [expr 0 + $left_offset + $pstripe_spacing]
+set pstripe_stop    [expr $block_width - $io_pad_width - $right_offset + 1]
 
 ###################################
 # Misc Functions
@@ -42,7 +50,7 @@ proc connect_std_cells_to_power { } {
 ###################################
 # Load Design
 source ./par.globals
-init_design
+init_design -setup {setup_view} -hold {hold_view}
 
 ###################################
 # Floorplan
@@ -51,7 +59,6 @@ init_design
 # Initial floorplan
 setIoFlowFlag 0
 floorPlan -site SOI12S0ADV12 -d $block_width $block_height $left_offset $bottom_offset $right_offset $top_offset
-# loadIoFile -noAdjustDieSize MAL_TOP.io
 uiSetTool select
 setFlipping f
 redraw
@@ -59,71 +66,65 @@ fit;    # Fit design to window
 win;    # Open Innovus GUI window
 
 # Power Rings
-addRing -nets { VSS VDD } -center 1 -layer {right M9 left M9 top M8 bottom M8} -width 1.4 -spacing 2
-addRing -nets { VSS VDD } -center 1 -layer {right M7 left M7 top M6 bottom M6} -width 1.4 -spacing 2
-addRing -nets { VSS VDD } -center 1 -layer {right M5 left M5 top M4 bottom M4} -width 1.4 -spacing 2
-addRing -nets { VSS VDD } -center 1 -layer {right M3 left M3}                  -width 1.4 -spacing 2
+addRing -nets { VSS VDD } -center 1 -layer {right M9 left M9 top M10 bottom M10} -width 8.0 -spacing 3
+addRing -nets { VSS VDD } -center 1 -layer {right M7 left M7 top M8 bottom M8}   -width 2.8 -spacing 3
+addRing -nets { VSS VDD } -center 1 -layer {right M5 left M5 top M6 bottom M6}   -width 2.0 -spacing 3
+addRing -nets { VSS VDD } -center 1 -layer {right M3 left M3 top M4 bottom M4}   -width 1.4 -spacing 3
 
-# VDDPST/VSSPST
+# Connect VDDPST/VSSPST to pads
 globalNetConnect VDDPST -type pgpin -pin DVDD -inst PAD_POWER_D* -verbose
 globalNetConnect VSSPST -type pgpin -pin DVSS -inst PAD_POWER_D* -verbose
 
-# VDD
+# # Connect and route VDD pad/ring
 globalNetConnect VDD -type pgpin -pin VDD -inst PAD_POWER_VDD1 -verbose
-sroute -inst {PAD_POWER_VDD1} -nets {VDD} -connect padPin -padPinPortConnect allGeom -area [list 1100 $right_offset $block_width $block_height] -padPinLayerRange {M3 M9} -allowJogging 0 -layerChangeRange {M3 M9}
+sroute -inst {PAD_POWER_VDD1} -nets {VDD} -connect padPin -padPinPortConnect allGeom -allowJogging 0 -padPinLayerRange {5 10} -layerChangeRange {5 10} -crossoverViaLayerRange {5 10} -targetViaLayerRange {5 10} -area [list [expr $block_width - $io_pad_width - $right_offset] $right_offset $block_width $block_height]
 
-# VSS
+# Connect and route VSS pad/ring
 globalNetConnect VSS -type pgpin -pin VSS -inst PAD_POWER_VSS1 -verbose
-sroute -inst {PAD_POWER_VSS1 } -nets {VSS} -connect padPin -padPinPortConnect allGeom -area [list 1100 $right_offset $block_width $block_height] -padPinLayerRange {M3 M9} -allowJogging 0 -layerChangeRange {M3 M9}
+sroute -inst {PAD_POWER_VSS1} -nets {VSS} -connect padPin -padPinPortConnect allGeom -allowJogging 0 -padPinLayerRange {5 10} -layerChangeRange {5 10} -crossoverViaLayerRange {5 10} -targetViaLayerRange {5 10} -area [list [expr $block_width - $io_pad_width - $right_offset] $right_offset $block_width $block_height]
 
 connect_std_cells_to_power
 # ######################################################################################################
 
 # Power Stripes
-setAddStripeMode  -remove_floating_stripe_over_block 1 -merge_with_all_layers 1 -extend_to_first_ring 1 -route_over_rows_only 1
-addStripe -nets {VDD VSS} -layer M8 -direction {horizontal} -start 100 -stop $block_height -width 1.4 -spacing 2 -allow_jog_block_ring 0 -stacked_via_bottom_layer M7 -stacked_via_top_layer M9 -snap_wire_center_to_grid Grid -set_to_set_distance 50
-addStripe -nets {VDD VSS} -layer M7 -direction {vertical}   -start 100 -stop $block_width  -width 1.4 -spacing 2 -allow_jog_block_ring 0 -stacked_via_bottom_layer M6 -stacked_via_top_layer M8 -snap_wire_center_to_grid Grid -set_to_set_distance 50 
-addStripe -nets {VDD VSS} -layer M6 -direction {horizontal} -start 100 -stop $block_height -width 1.4 -spacing 2 -allow_jog_block_ring 0 -stacked_via_bottom_layer M5 -stacked_via_top_layer M7 -snap_wire_center_to_grid Grid -set_to_set_distance 50
-addStripe -nets {VDD VSS} -layer M5 -direction {vertical}   -start 100 -stop $block_width  -width 1.4 -spacing 2 -allow_jog_block_ring 0 -stacked_via_bottom_layer M4 -stacked_via_top_layer M6 -snap_wire_center_to_grid Grid -set_to_set_distance 50
+setAddStripeMode -detailed_log 1 -remove_floating_stripe_over_block 1 -merge_with_all_layers 1 -extend_to_first_ring 1 -route_over_rows_only 1 -allow_jog none -stacked_via_bottom_layer M4 -stacked_via_top_layer M9
+addStripe -nets {VDD VSS} -layer M8 -direction {horizontal} -start $pstripe_start -stop $pstripe_stop -width 2.8 -spacing 3 -snap_wire_center_to_grid Grid -set_to_set_distance $pstripe_spacing
+addStripe -nets {VDD VSS} -layer M7 -direction {vertical}   -start $pstripe_start -stop $pstripe_stop -width 2.8 -spacing 3 -snap_wire_center_to_grid Grid -set_to_set_distance $pstripe_spacing 
+addStripe -nets {VDD VSS} -layer M6 -direction {horizontal} -start $pstripe_start -stop $pstripe_stop -width 2.0 -spacing 3 -snap_wire_center_to_grid Grid -set_to_set_distance $pstripe_spacing
+addStripe -nets {VDD VSS} -layer M5 -direction {vertical}   -start $pstripe_start -stop $pstripe_stop -width 2.0 -spacing 3 -snap_wire_center_to_grid Grid -set_to_set_distance $pstripe_spacing
 
 # Assign VDD/VSS
-#clearGlobalNets
 connect_std_cells_to_power
 
-# saveDesign "${top_level}.pads_routed.enc"
+saveDesign "${top_level}.pads_routed.enc"
 
-sroute -connect { corePin } -layerChangeRange { M1 M6 } -allowJogging 0 -crossoverViaBottomLayer M1 -allowLayerChange 1 -targetViaTopLayer M6 -crossoverViaTopLayer M6 -targetViaBottomLayer M1 -nets { VDD VSS }
+# Route power and ground to cell tracks
+sroute -nets {VDD VSS} -connect {corePin} -layerChangeRange {1 5} -allowJogging 0 -allowLayerChange 1 -crossoverViaLayerRange {1 5} -targetViaLayerRange {1 5}
 
 ############################################
 # PLACE
 ############################################
 
-# set_dont_touch [get_nets ana*]
-# set_dont_touch [get_cells -hierarchical *DTL_*]
-# set_dont_touch [get_cells RNG_top/DUT*/D*/DT_ro*]
-# set_dont_touch [get_cells outbuffer*]
+set_dont_touch [get_cells outbuffer*]
 
-
-setDesignMode -flowEffort high -process 45
+setDesignMode -flowEffort high -process $process
 setPrerouteAsObs {1}
 # timeDesign -prePlace
 
 setPlaceMode -maxRouteLayer 9
-#setPlaceMode -congEffort high
 placeDesign -noPrePlaceOpt
 # timeDesign -preCTS
 
-setOptMode -holdTargetSlack 0.10 -holdFixingEffort high
-setOptMode -addInst true -addInstancePrefix PRECTS
-optDesign -preCTS
-congRepair
+# setOptMode -holdTargetSlack 0.10 -holdFixingEffort high
+# setOptMode -addInst true -addInstancePrefix PRECTS
+# optDesign -preCTS
+# congRepair
 
 addTieHiLo -cell "TIEHI_X1M_A12TR TIELO_X1M_A12TR"
 
 connect_std_cells_to_power
 # saveDesign "${top_level}.placed.enc"
 deleteEmptyModule
-stop
 
 # #####################################
 # # Clock Tree Synthesis
