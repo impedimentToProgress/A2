@@ -50,8 +50,8 @@ proc connect_std_cells_to_power { } {
 ###################################
 # Load Design
 source ./par.globals
-init_design -setup {setup_view} -hold {hold_view}
-
+# init_design -setup {setup_view} -hold {hold_view}
+init_design
 ###################################
 # Floorplan
 ###################################
@@ -87,7 +87,7 @@ connect_std_cells_to_power
 # ######################################################################################################
 
 # Power Stripes
-setAddStripeMode -detailed_log 1 -remove_floating_stripe_over_block 1 -merge_with_all_layers 1 -extend_to_first_ring 1 -route_over_rows_only 1 -allow_jog none -stacked_via_bottom_layer M4 -stacked_via_top_layer M9
+setAddStripeMode -remove_floating_stripe_over_block 1 -merge_with_all_layers 1 -extend_to_first_ring 1 -route_over_rows_only 1 -allow_jog none -stacked_via_bottom_layer M4 -stacked_via_top_layer M9
 addStripe -nets {VDD VSS} -layer M8 -direction {horizontal} -start $pstripe_start -stop $pstripe_stop -width 2.8 -spacing 3 -snap_wire_center_to_grid Grid -set_to_set_distance $pstripe_spacing
 addStripe -nets {VDD VSS} -layer M7 -direction {vertical}   -start $pstripe_start -stop $pstripe_stop -width 2.8 -spacing 3 -snap_wire_center_to_grid Grid -set_to_set_distance $pstripe_spacing 
 addStripe -nets {VDD VSS} -layer M6 -direction {horizontal} -start $pstripe_start -stop $pstripe_stop -width 2.0 -spacing 3 -snap_wire_center_to_grid Grid -set_to_set_distance $pstripe_spacing

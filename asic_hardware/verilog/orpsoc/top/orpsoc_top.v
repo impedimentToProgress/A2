@@ -81,8 +81,8 @@ module orpsoc_top
   
     sys_clk_in_p, //,sys_clk_in_n,
 
-    rst_n_pad_i  
-    , sr_out, sr, ex_insn, ex_pc
+    rst_n_pad_i, 
+    sr_out, sr, ex_insn, ex_pc
     );
 
 `include "orpsoc-params.v"   
