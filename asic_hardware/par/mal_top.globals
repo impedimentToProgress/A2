@@ -1,21 +1,16 @@
 # Specify the name of your top level module,
 # netlist and par paths, and std cell library path
 set top_level          "MAL_TOP"
-set synth_top_level    "orpsoc_top"
 set synth_root         "/home/ttrippel/A2/asic_hardware/netlist"
 set par_root 	       "/home/ttrippel/A2/asic_hardware/par"
 # set tech_timing_path   "/home/cadlib/Processes/IBM/STANDARD_CELLS/Virage/cp65npksdsta03/liberty/logic_synth"
 # set tech_stdcells_path "/home/cadlib/Processes/IBM/STANDARD_CELLS/Virage/cp65npksdsta03/lef/5.6"
-# set tech_io_path       "/home/cadlib/Processes/IBM/DIGITAL_DESIGN/CMRF7SF/wb_io/base/v.20110710/lef"
-# set tech_timing_path   "/home/cadlib/Processes/IBM/DIGITAL_DESIGN/CMRF7SF/std_cell/v.20111130/synopsys/nom"
-# set tech_stdcells_path "/home/cadlib/Processes/IBM/DIGITAL_DESIGN/CMRF7SF/std_cell/v.20111130/lef"
-# set tech_io_path       "/home/cadlib/Processes/IBM/DIGITAL_DESIGN/CMRF7SF/wb_io/base/v.20110710/lef"
 set tech_timing_path   "/home/cadlib/Processes/IBM/STANDARD_CELLS/ARM/12s0/ibm/soi12s0/sc12_base_v31_rvt/2009q1v2/lib"
 set tech_stdcells_path "/home/cadlib/Processes/IBM/STANDARD_CELLS/ARM/12s0/ibm/soi12s0/sc12_base_v31_rvt/2009q1v2/lef"
 set tech_io_path       "/home/cadlib/Processes/IBM/STANDARD_CELLS/ARM/12s0/arm/ibm/soi12s0/io_gppr_t18_mv10_mv18_avt_pl/r0p0-00bet0/lef"
 
 # Load the Verilog netlist output from synthesis
-set init_verilog            [list ${syn_root}/${synth_top_level}.45nm_100MHz.nl.v ${top_level}.v]
+set init_verilog            ${syn_root}/${top_level}.nl.v
 set init_design_netlisttype {Verilog}
 set init_design_settop		{1}
 set init_top_cell			${top_level}
@@ -30,31 +25,25 @@ set init_design_uniquify    {1}
 # 	# -cap_table 		  $vars(rc_max,cap_table) \
 # 	# -qx_tech_file 	  $vars(rc_max,qx_tech_file)
 
-# # Configure library sets
-# create_library_set -name slow_library_set -timing [list ${tech_timing_path}/sc12_base_v31_rvt_soi12s0_ss_nominal_max_0p81v_125c_mns.lib]
-# create_library_set -name fast_library_set -timing [list ${tech_timing_path}/sc12_base_v31_rvt_soi12s0_ff_nominal_min_1p10v_m40c_mns.lib]
+# Configure library sets
+create_library_set -name slow_library_set -timing [list ${tech_timing_path}/sc12_base_v31_rvt_soi12s0_ss_nominal_max_0p81v_125c_mns.lib]
+create_library_set -name fast_library_set -timing [list ${tech_timing_path}/sc12_base_v31_rvt_soi12s0_ff_nominal_min_1p10v_m40c_mns.lib]
 
-# # Configure delay corners
-# # create_delay_corner -name max_delay_corner -library_set slow_library_set -rc_corner rc_max
-# # create_delay_corner -name min_delay_corner -library_set fast_library_set -rc_corner rc_min
-# create_delay_corner -name max_delay_corner -library_set slow_library_set
-# create_delay_corner -name min_delay_corner -library_set fast_library_set
+# Configure delay corners
+create_delay_corner -name max_delay_corner -library_set slow_library_set; # -rc_corner rc_max
+create_delay_corner -name min_delay_corner -library_set fast_library_set; # -rc_corner rc_min
 
-# # Load SDC constraints from Synthesis
-# create_constraint_mode -name synth_constraints -sdc_files [list ${syn_root}/${synth_top_level}.45nm_100MHz.sdc]
+# Load SDC constraints from Synthesis
+create_constraint_mode -name synth_constraints -sdc_files [list ${syn_root}/${top_level}.sdc]
 
-# # Create timing analysis views
-# create_analysis_view -name hold_view  -constraint_mode synth_constraints -delay_corner min_delay_corner
-# create_analysis_view -name setup_view -constraint_mode synth_constraints -delay_corner max_delay_corner
+# Create timing analysis views
+create_analysis_view -name hold_view  -constraint_mode synth_constraints -delay_corner min_delay_corner
+create_analysis_view -name setup_view -constraint_mode synth_constraints -delay_corner max_delay_corner
 
 # Load standard cell LEF file(s)
 # set init_lef_file [list \
 # 	${tech_stdcells_path}/cp65npksdst_m08f3f1.lef \
 # 	${tech_stdcells_path}/cp65npksdst.lef \
-# ];
-# set init_lef_file [list \
-# 	${tech_stdcells_path}/cmos7rf_8MA_tech.lef\
-# 	${tech_io_path}/IBM_CMOS7RF_BASE_F8MA.lef \
 # ];
 set init_lef_file [list \
 	${tech_stdcells_path}/tech_nominal_25c_3_20_20_00_00_02_LB.lef \
@@ -62,7 +51,7 @@ set init_lef_file [list \
 	${tech_io_path}/io_gppr_soi12s0_t18_mv10_mv18_avt_pl_3_20_20_00_00_02_LB.lef \
 ];
 
-# Load the I/O constraint file (@TODO: where is this generated??)
+# Load the I/O constraint file
 set init_io_file ${top_level}.io
 
 set delaycal_use_default_delay_limit {1000}

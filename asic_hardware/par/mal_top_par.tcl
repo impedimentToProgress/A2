@@ -50,8 +50,8 @@ proc connect_std_cells_to_power { } {
 ###################################
 # Load Design
 source ./par.globals
-# init_design -setup {setup_view} -hold {hold_view}
-init_design
+init_design -setup {setup_view} -hold {hold_view}
+
 ###################################
 # Floorplan
 ###################################
