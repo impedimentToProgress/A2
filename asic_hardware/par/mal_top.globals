@@ -1,13 +1,21 @@
 # Specify the name of your top level module,
 # netlist and par paths, and std cell library path
-set top_level          "MAL_TOP"
-set synth_root         "/home/ttrippel/A2/asic_hardware/netlist"
-set par_root 	       "/home/ttrippel/A2/asic_hardware/par"
-# set tech_timing_path   "/home/cadlib/Processes/IBM/STANDARD_CELLS/Virage/cp65npksdsta03/liberty/logic_synth"
-# set tech_stdcells_path "/home/cadlib/Processes/IBM/STANDARD_CELLS/Virage/cp65npksdsta03/lef/5.6"
-set tech_timing_path   "/home/cadlib/Processes/IBM/STANDARD_CELLS/ARM/12s0/ibm/soi12s0/sc12_base_v31_rvt/2009q1v2/lib"
-set tech_stdcells_path "/home/cadlib/Processes/IBM/STANDARD_CELLS/ARM/12s0/ibm/soi12s0/sc12_base_v31_rvt/2009q1v2/lef"
-set tech_io_path       "/home/cadlib/Processes/IBM/STANDARD_CELLS/ARM/12s0/arm/ibm/soi12s0/io_gppr_t18_mv10_mv18_avt_pl/r0p0-00bet0/lef"
+set top_level         "MAL_TOP"
+set synth_root        "/home/ttrippel/A2/asic_hardware/netlist"
+set par_root          "/home/ttrippel/A2/asic_hardware/par"
+set stdcell_tech_root "/home/cadlib/Processes/IBM/STANDARD_CELLS/ARM/12s0/ibm/soi12s0/sc12_base_v31_rvt/2009q1v2/"
+set io_tech_root      "/home/cadlib/Processes/IBM/STANDARD_CELLS/ARM/12s0/arm/ibm/soi12s0/io_gppr_t18_mv10_mv18_avt_pl/r0p0-00bet0/"
+
+# .lib file paths
+set time_slow_stdcells_path ${stdcell_tech_root}/lib/sc12_base_v31_rvt_soi12s0_ss_nominal_max_0p81v_125c_mns.lib
+set time_slow_io_path       ${io_tech_root}/lib/io_gppr_soi12s0_t18_mv10_mv18_avt_pl_ss_cnom_0p81v_1p65v_125c_3_20_30_00_00_02_LB.lib
+set time_fast_stdcells_path ${stdcell_tech_root}/lib/sc12_base_v31_rvt_soi12s0_ff_nominal_min_1p10v_m40c_mns.lib
+set time_fast_io_path       ${io_tech_root}/lib/io_gppr_soi12s0_t18_mv10_mv18_avt_pl_ff_cnom_1p10v_1p60v_m40c_3_20_30_00_00_02_LB.lib
+
+# .lef file paths
+set tech_base_path     ${stdcell_tech_root}/lef/sc12_base_v31_rvt_soi12s0.lef 
+set tech_stdcells_path ${stdcell_tech_root}/lef/tech_nominal_25c_3_20_20_00_00_02_LB.lef
+set tech_io_path       ${io_tech_root}/lef/io_gppr_soi12s0_t18_mv10_mv18_avt_pl_3_20_20_00_00_02_LB.lef
 
 # Load the Verilog netlist output from synthesis
 set init_verilog            ${syn_root}/${top_level}.nl.v
@@ -26,8 +34,15 @@ set init_design_uniquify    {1}
 # 	# -qx_tech_file 	  $vars(rc_max,qx_tech_file)
 
 # Configure library sets
-create_library_set -name slow_library_set -timing [list ${tech_timing_path}/sc12_base_v31_rvt_soi12s0_ss_nominal_max_0p81v_125c_mns.lib]
-create_library_set -name fast_library_set -timing [list ${tech_timing_path}/sc12_base_v31_rvt_soi12s0_ff_nominal_min_1p10v_m40c_mns.lib]
+create_library_set -name slow_library_set -timing [list ${time_slow_stdcells_path} ${time_slow_io_path}]
+create_library_set -name fast_library_set -timing [list ${time_fast_stdcells_path} ${time_fast_io_path}]
+
+# create_library_set -name slow_library_set -timing [list \
+# 	${tech_stdcells_timing_path}/sc12_base_v31_rvt_soi12s0_ss_nominal_max_0p81v_125c_mns.lib \ 
+# ];
+# create_library_set -name fast_library_set -timing [list \
+# 	${tech_stdcells_timing_path}/sc12_base_v31_rvt_soi12s0_ff_nominal_min_1p10v_m40c_mns.lib \
+# ];
 
 # Configure delay corners
 create_delay_corner -name max_delay_corner -library_set slow_library_set; # -rc_corner rc_max
@@ -41,15 +56,7 @@ create_analysis_view -name hold_view  -constraint_mode synth_constraints -delay_
 create_analysis_view -name setup_view -constraint_mode synth_constraints -delay_corner max_delay_corner
 
 # Load standard cell LEF file(s)
-# set init_lef_file [list \
-# 	${tech_stdcells_path}/cp65npksdst_m08f3f1.lef \
-# 	${tech_stdcells_path}/cp65npksdst.lef \
-# ];
-set init_lef_file [list \
-	${tech_stdcells_path}/tech_nominal_25c_3_20_20_00_00_02_LB.lef \
-	${tech_stdcells_path}/sc12_base_v31_rvt_soi12s0.lef \
-	${tech_io_path}/io_gppr_soi12s0_t18_mv10_mv18_avt_pl_3_20_20_00_00_02_LB.lef \
-];
+set init_lef_file [list ${tech_stdcells_path} ${tech_base_path} ${tech_io_path}]
 
 # Load the I/O constraint file
 set init_io_file ${top_level}.io

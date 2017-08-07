@@ -1,10 +1,11 @@
 ###################################
-# Author: Kaiyuan Yang
-# Last Edited: May 2014
+# Author: Timothy Trippel
+# Last Edited: August 2017
 ###################################
-set syn_root  /home/ttrippel/A2/asic_hardware/netlist
-set tech_root /home/cadlib/Processes/IBM/STANDARD_CELLS/Virage/cp65npksdsta03
-set par_root  /home/ttrippel/A2/asic_hardware/par
+set global_config mal_top.globals
+set syn_root  	  /home/ttrippel/A2/asic_hardware/netlist
+set tech_root 	  /home/cadlib/Processes/IBM/STANDARD_CELLS/Virage/cp65npksdsta03
+set par_root  	  /home/ttrippel/A2/asic_hardware/par
 
 ###################################
 # CONFIG
@@ -49,8 +50,9 @@ proc connect_std_cells_to_power { } {
 # Init
 ###################################
 # Load Design
-source ./par.globals
+source ./${global_config}
 init_design -setup {setup_view} -hold {hold_view}
+set_interactive_constraint_modes [all_constraint_modes]
 
 ###################################
 # Floorplan
@@ -75,7 +77,7 @@ addRing -nets { VSS VDD } -center 1 -layer {right M3 left M3 top M4 bottom M4}  
 globalNetConnect VDDPST -type pgpin -pin DVDD -inst PAD_POWER_D* -verbose
 globalNetConnect VSSPST -type pgpin -pin DVSS -inst PAD_POWER_D* -verbose
 
-# # Connect and route VDD pad/ring
+# Connect and route VDD pad/ring
 globalNetConnect VDD -type pgpin -pin VDD -inst PAD_POWER_VDD1 -verbose
 sroute -inst {PAD_POWER_VDD1} -nets {VDD} -connect padPin -padPinPortConnect allGeom -allowJogging 0 -padPinLayerRange {5 10} -layerChangeRange {5 10} -crossoverViaLayerRange {5 10} -targetViaLayerRange {5 10} -area [list [expr $block_width - $io_pad_width - $right_offset] $right_offset $block_width $block_height]
 
@@ -96,7 +98,7 @@ addStripe -nets {VDD VSS} -layer M5 -direction {vertical}   -start $pstripe_star
 # Assign VDD/VSS
 connect_std_cells_to_power
 
-saveDesign "${top_level}.pads_routed.enc"
+# saveDesign "${top_level}.pads_routed.enc"
 
 # Route power and ground to cell tracks
 sroute -nets {VDD VSS} -connect {corePin} -layerChangeRange {1 5} -allowJogging 0 -allowLayerChange 1 -crossoverViaLayerRange {1 5} -targetViaLayerRange {1 5}
@@ -109,16 +111,16 @@ set_dont_touch [get_cells outbuffer*]
 
 setDesignMode -flowEffort high -process $process
 setPrerouteAsObs {1}
-# timeDesign -prePlace
+timeDesign -prePlace
 
 setPlaceMode -maxRouteLayer 9
 placeDesign -noPrePlaceOpt
-# timeDesign -preCTS
+timeDesign -preCTS
 
-# setOptMode -holdTargetSlack 0.10 -holdFixingEffort high
-# setOptMode -addInst true -addInstancePrefix PRECTS
-# optDesign -preCTS
-# congRepair
+setOptMode -holdTargetSlack 0.10 -holdFixingEffort high
+setOptMode -addInst true -addInstancePrefix PRECTS
+optDesign -preCTS
+congRepair
 
 addTieHiLo -cell "TIEHI_X1M_A12TR TIELO_X1M_A12TR"
 
@@ -126,24 +128,24 @@ connect_std_cells_to_power
 # saveDesign "${top_level}.placed.enc"
 deleteEmptyModule
 
-# #####################################
-# # Clock Tree Synthesis
-# #####################################
+#####################################
+# Clock Tree Synthesis
+#####################################
 # #create_clock  PAD_u0_digin/ZI -period 1
 # #Create clock tree spec
 
-# #setCTSMode \
-# #    -traceDPinAsLeaf true \
-# #    -traceIoPinAsLeaf true \
-# #    -bottomPreferredLayer 3 \
-# #    -topPreferredLayer 6 \
-# #    -addClockRootProp true
-# #exec /bin/rm -f ${top_level}.cts
-# #createClockTreeSpec -output ${top_level}.cts
-# #exec sed -i -r "s/^MaxDelay .*/MaxDelay 120ps/g" ${top_level}.cts
-# #exec sed -i -r "s/^MaxSkew .*/MaxSkew 50ps/g" ${top_level}.cts
-# #exec sed -i -r "s/END/RootInputTran 100ps\\nEND/g" ${top_level}.cts
-# #exec sed -i -r "s/^RouteClkNet .*//g" ${top_level}.cts
+# setCTSMode \
+#    -traceDPinAsLeaf true \
+#    -traceIoPinAsLeaf true \
+#    -routeBottomPreferredLayer 3 \
+#    -routeTopPreferredLayer 6 \
+#    -addClockRootProp true
+# exec /bin/rm -f ${top_level}.cts
+# createClockTreeSpec -output ${top_level}.cts
+# exec sed -i -r "s/^MaxDelay .*/MaxDelay 120ps/g" ${top_level}.cts
+# exec sed -i -r "s/^MaxSkew .*/MaxSkew 50ps/g" ${top_level}.cts
+# exec sed -i -r "s/END/RootInputTran 100ps\\nEND/g" ${top_level}.cts
+# exec sed -i -r "s/^RouteClkNet .*//g" ${top_level}.cts
 
 # specifyClockTree -file ${top_level}.cts
 
