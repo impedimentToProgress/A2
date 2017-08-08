@@ -10,9 +10,10 @@ set par_root  	  /home/ttrippel/A2/asic_hardware/par
 ###################################
 # CONFIG
 ###################################
-set top_level     MAL_TOP
-set process       45;  # nm
-set io_pad_width  130; # width of IO pad in microns
+set top_level     	  MAL_TOP
+set process       	  45;  # nm
+set io_pad_width  	  130; # width of IO pad in microns
+set top_routing_layer 10
 
 # Die Dimensions
 set block_width   540
@@ -118,7 +119,7 @@ placeDesign -noPrePlaceOpt
 timeDesign -preCTS
 
 setOptMode -holdTargetSlack 0.10 -holdFixingEffort high
-setOptMode -addInst true -addInstancePrefix PRECTS
+setOptMode -addInst true -addInstancePrefix PRECTS_
 optDesign -preCTS
 congRepair
 
@@ -131,143 +132,119 @@ deleteEmptyModule
 #####################################
 # Clock Tree Synthesis
 #####################################
-# #create_clock  PAD_u0_digin/ZI -period 1
-# #Create clock tree spec
+# Create clock tree spec 
+add_ndr -name CTS_2W1S -width_multiplier {M3:M4 2} -generate_via
+add_ndr -name CTS_2W2S -spacing_multiplier {M5:M10 2} -width_multiplier {M5:M10 2} -generate_via
 
-# setCTSMode \
-#    -traceDPinAsLeaf true \
-#    -traceIoPinAsLeaf true \
-#    -routeBottomPreferredLayer 3 \
-#    -routeTopPreferredLayer 6 \
-#    -addClockRootProp true
-# exec /bin/rm -f ${top_level}.cts
-# createClockTreeSpec -output ${top_level}.cts
-# exec sed -i -r "s/^MaxDelay .*/MaxDelay 120ps/g" ${top_level}.cts
-# exec sed -i -r "s/^MaxSkew .*/MaxSkew 50ps/g" ${top_level}.cts
-# exec sed -i -r "s/END/RootInputTran 100ps\\nEND/g" ${top_level}.cts
-# exec sed -i -r "s/^RouteClkNet .*//g" ${top_level}.cts
+create_route_type -name leaf_rule  -non_default_rule CTS_2W1S -top_preferred_layer M4  -bottom_preferred_layer M3
+create_route_type -name trunk_rule -non_default_rule CTS_2W2S -top_preferred_layer M7  -bottom_preferred_layer M5 -shield_net VSS -bottom_shield_layer M6
+create_route_type -name top_rule   -non_default_rule CTS_2W2S -top_preferred_layer M10 -bottom_preferred_layer M8 -shield_net VSS -bottom_shield_layer M8 
 
-# specifyClockTree -file ${top_level}.cts
+set_ccopt_property -net_type leaf  route_type leaf_rule
+set_ccopt_property -net_type trunk route_type trunk_rule
+set_ccopt_property -net_type top   route_type top_rule 
 
-# ckSynthesis \
-#     -rguide ${top_level}.cts.rguide \
-#     -report ${top_level}.ctsrpt \
-#     -macromodel ${top_level}.ctsmdl \
-#     -forceReconvergent
+set_ccopt_property routing_top_min_fanout 10000
 
-# setOptMode -restruct false -congOpt true -addInst true -addInstancePrefix POSCTS_ 
-# timeDesign -postCTS
+set_ccopt_property target_max_trans 100ps
+set_ccopt_property target_skew      50ps
 
-# optDesign -postCTS
-# optDesign -postCTS -hold
+exec /bin/rm -f ${top_level}.cts
+create_ccopt_clock_tree_spec -file ${top_level}.cts
 
-# #optDesign -postCTS -idealClock
-# #optDesign -postCTS -drv -idealClock
-# #optDesign -postCTS -hold -idealClock
+ccopt_design -cts
+
+setOptMode -restruct false -addInst true -addInstancePrefix POSCTS_ 
+timeDesign -postCTS
+optDesign -postCTS
+optDesign -postCTS -hold
 
 # saveDesign "${top_level}.ck_synth.enc"
 
-# # Connect any additional buffers
-# connect_std_cells_to_power
-# #sroute -nets {VDD VSS} -connect corePin -allowJogging 0
+# Connect any additional buffers
+connect_std_cells_to_power
 
-# #####################################
-# # Signal Routing
-# #####################################
-# # Trial route
-# trialRoute -highEffort
+#####################################
+# Signal Routing
+#####################################
+# Trial route
+trialRoute -highEffort
 
-# #setNanoRouteMode -routeWithViaInPin true
-# #setNanoRouteMode -drouteOnGridOnly via
-# setNanoRouteMode -envAlignNonPreferredTrack true
-# #setNanoRouteMode -routeWithEco true
-# setNanoRouteMode -routeWithViaOnlyForStandardCellPin false
+setNanoRouteMode -envAlignNonPreferredTrack true
+setNanoRouteMode -routeWithViaOnlyForStandardCellPin false
+setNanoRouteMode -routeWithTimingDriven true
+setNanoRouteMode -routeWithSiDriven true
+setNanoRouteMode -routeSiEffort max
+setNanoRouteMode -drouteAutoStop false
+setNanoRouteMode -drouteUseMinSpacingForBlockage false
+setNanoRouteMode -routeMergeSpecialWire true
+setNanoRouteMode -drouteHonorStubRuleForBlockPin true
+setNanoRouteMode -drouteUseMultiCutViaEffort high
+setNanoRouteMode -routeTopRoutingLayer $top_routing_layer
+setNanoRouteMode -routeBottomRoutingLayer 1
+setNanoRouteMode -routeSelectedNetOnly false
+setNanoRouteMode -routeWithViaInPin true
 
-# #####
-# setNanoRouteMode -routeWithTimingDriven true
-# setNanoRouteMode -routeWithSiDriven true
-# setNanoRouteMode -routeSiEffort max
-# #####
-
-# setNanoRouteMode -drouteAutoStop false
-# setNanoRouteMode -drouteUseMinSpacingForBlockage false
-# setNanoRouteMode -routeMergeSpecialWire true
-# setNanoRouteMode -drouteHonorStubRuleForBlockPin true
-# setNanoRouteMode -drouteUseMinSpacingForBlockage false
-# setNanoRouteMode -drouteUseMultiCutViaEffort high
-# setNanoRouteMode -routeTopRoutingLayer 8
-# setNanoRouteMode -routeBottomRoutingLayer 1
-# setNanoRouteMode -routeSelectedNetOnly false
-
-# #####
-# setNanoRouteMode -quiet -routeWithViaInPin true
-# #####
-
-
-# # Do both global and detail routing
-# globalDetailRoute
+# Do both global and detail routing
+globalDetailRoute
     
-#     saveDesign ${top_level}.route.enc 
+saveDesign ${top_level}.route.enc 
 
-# # Connect any filler cells to power/ground
-# connect_std_cells_to_power
+# Connect any filler cells to power/ground
+connect_std_cells_to_power
+
+###################################################
+# Finalize the design
+# Todo: this section could use some cleaning
+###################################################
+
+# Check timing
+setAnalysisMode -skew -noWarn -checkType hold
+report_timing
+setAnalysisMode -skew -noWarn -setup -clockPropagation forcedIdeal
+report_timing
 
 
-# ###################################################
-# # Finalize the design
-# # Todo: this section could use some cleaning
-# ###################################################
+timeDesign -postRoute -hold -pathReports -slackReports -numPaths 50 -prefix RNG_TOP_PAD_NEW_postRoute -outDir timingReports
+#setOptMode -effort high -leakagePowerEffort high -dynamicPowerEffort high -yieldEffort none -reclaimArea true -simplifyNetlist true -setupTargetSlack 0 -holdTargetSlack 0.1 -maxDensity 0.95 -drcMargin 0 -usefulSkew false
+setOptMode -fixCap true -fixTran true -fixFanoutLoad true
+optDesign -postRoute
+setOptMode -fixCap true -fixTran true -fixFanoutLoad true
+optDesign -postRoute
+optDesign -postRoute -hold
 
-# # Check timing
-# setAnalysisMode -skew -noWarn -checkType hold
-# report_timing
-# setAnalysisMode -skew -noWarn -setup -clockPropagation forcedIdeal
-# report_timing
+# Fix Antenna errors
+# Set the top metal lower than the maximum level to avoid adding diodes
+setNanoRouteMode -routeTopRoutingLayer $top_routing_layer
+setNanoRouteMode -routeInsertDiodeForClockNets true
+setNanoRouteMode -drouteFixAntenna true
+setNanoRouteMode -routeAntennaCellName "ANTENNA2A10TR"
+setNanoRouteMode -routeInsertAntennaDiode true
+setNanoRouteMode -drouteSearchAndRepair true 
+setNanoRouteMode -routeWithTimingDriven true
+setNanoRouteMode -routeWithSiDriven true
 
+globalDetailRoute
+optDesign -postRoute
+optDesign -postRoute -hold
+optDesign -postRoute -drv
 
-# timeDesign -postRoute -hold -pathReports -slackReports -numPaths 50 -prefix RNG_TOP_PAD_NEW_postRoute -outDir timingReports
-# #setOptMode -effort high -leakagePowerEffort high -dynamicPowerEffort high -yieldEffort none -reclaimArea true -simplifyNetlist true -setupTargetSlack 0 -holdTargetSlack 0.1 -maxDensity 0.95 -drcMargin 0 -usefulSkew false
-# setOptMode -fixCap true -fixTran true -fixFanoutLoad true
-# optDesign -postRoute
-# setOptMode -fixCap true -fixTran true -fixFanoutLoad true
-# optDesign -postRoute
-# optDesign -postRoute -hold
+deleteObstruct -all
+# Add fill cells
+addFiller -cell FILLCAPTIE128A10TR FILLCAPTIE64A10TR FILLCAPTIE32A10TR FILLCAPTIE16A10TR FILLCAPTIE9A10TR FILLCAPTIE8A10TR -prefix FILLCAPTIE
+addFiller -cell FILLCAP128A10TR FILLCAP65A10TR FILLCAP32A10TR FILLCAP17A10TR FILLCAP8A10TR FILLCAP6A10TR -prefix FILLCAP
+addFiller -cell FILL128A10TR FILL64A10TR FILL32A10TR FILL16A10TR FILL8A10TR FILL4A10TH FILL2A10TR FILL1A10TR -prefix FILL
 
-# # Fix Antenna errors
-# # Set the top metal lower than the maximum level to avoid adding diodes
-# setNanoRouteMode -routeTopRoutingLayer 8
-# setNanoRouteMode -routeInsertDiodeForClockNets true
-# setNanoRouteMode -drouteFixAntenna true
-# setNanoRouteMode -routeAntennaCellName "ANTENNA2A10TR"
-# setNanoRouteMode -routeInsertAntennaDiode true
-# setNanoRouteMode -drouteSearchAndRepair true 
-# setNanoRouteMode -routeWithTimingDriven true
-# setNanoRouteMode -routeWithSiDriven true
+# Connect any filler cells to power/ground
+connect_std_cells_to_power
+#saveDesign "${top_level}.routed2.enc"
 
-# globalDetailRoute
-# optDesign -postRoute
-# optDesign -postRoute -hold
-# optDesign -postRoute -drv
+saveDesign "${top_level}.routed2.enc"
 
-# deleteObstruct -all
-# # Add fill cells
-# addFiller -cell FILLCAPTIE128A10TR FILLCAPTIE64A10TR FILLCAPTIE32A10TR FILLCAPTIE16A10TR FILLCAPTIE9A10TR FILLCAPTIE8A10TR -prefix FILLCAPTIE
-# addFiller -cell FILLCAP128A10TR FILLCAP65A10TR FILLCAP32A10TR FILLCAP17A10TR FILLCAP8A10TR FILLCAP6A10TR -prefix FILLCAP
-# addFiller -cell FILL128A10TR FILL64A10TR FILL32A10TR FILL16A10TR FILL8A10TR FILL4A10TH FILL2A10TR FILL1A10TR -prefix FILL
-
-# # Connect any filler cells to power/ground
-# connect_std_cells_to_power
-# #sroute -nets {VDD VSS} -connect corePin -allowJogging 0
-# #saveDesign "${top_level}.routed2.enc"
-
-# # Delete halos (not applicable to this design, but we leave it here.
-# #deleteHaloFromBlock -allBlock
-# saveDesign "${top_level}.routed2.enc"
-
-# addIoFiller -cell PFILLER20 -prefix PAD_FILLER -side e
-# addIoFiller -cell PFILLER10  -prefix PAD_FILLER -side e
-# addIoFiller -cell PFILLER1      -prefix PAD_FILLER -side e
-# addIoFiller -cell PFILLER05    -prefix PAD_FILLER -side e
+addIoFiller -cell PFILLER20 -prefix PAD_FILLER -side e
+addIoFiller -cell PFILLER10 -prefix PAD_FILLER -side e
+addIoFiller -cell PFILLER1  -prefix PAD_FILLER -side e
+addIoFiller -cell PFILLER05 -prefix PAD_FILLER -side e
 
 # ###################################################
 # # Report and Output
@@ -336,7 +313,7 @@ deleteEmptyModule
 
 # puts "**************************************"
 # puts "*                                    *"
-# puts "* Encounter script finished          *"
+# puts "* Innovus script finished            *"
 # puts "*                                    *"
 # puts "**************************************"
 
