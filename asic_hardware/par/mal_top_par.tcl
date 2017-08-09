@@ -3,9 +3,9 @@
 # Last Edited: August 2017
 ###################################
 set global_config mal_top.globals
-set syn_root  	  /home/ttrippel/A2/asic_hardware/netlist
-set tech_root 	  /home/cadlib/Processes/IBM/STANDARD_CELLS/Virage/cp65npksdsta03
+set output_dir    par_output
 set par_root  	  /home/ttrippel/A2/asic_hardware/par
+set map_file_path /home/cadlib/Processes/IBM/STANDARD_CELLS/ARM/12s0/ibm/soi12s0/sc12_base_v31_rvt/2009q1v2/lef/tech_nominal_25c_3_20_30_00_00_02_LB.map
 
 ###################################
 # CONFIG
@@ -38,6 +38,14 @@ set pstripe_stop    [expr $block_width - $io_pad_width - $right_offset + 1]
   # getMultiCpuLicense 8
   # setMultiCpuUsage -acquireLicense 8
 #}
+
+# restore_from_saved ${par_root} ${top_level}
+# proc restore_from_saved { par_root top_level } {
+#     restoreDesign ${par_root}/${top_level}.route.enc.dat ${top_level}
+#     redraw
+#     fit
+#     win
+# }
 
 proc connect_std_cells_to_power { } {
     globalNetConnect VDD -type tiehi -inst * -verbose
@@ -87,7 +95,6 @@ globalNetConnect VSS -type pgpin -pin VSS -inst PAD_POWER_VSS1 -verbose
 sroute -inst {PAD_POWER_VSS1} -nets {VSS} -connect padPin -padPinPortConnect allGeom -allowJogging 0 -padPinLayerRange {5 10} -layerChangeRange {5 10} -crossoverViaLayerRange {5 10} -targetViaLayerRange {5 10} -area [list [expr $block_width - $io_pad_width - $right_offset] $right_offset $block_width $block_height]
 
 connect_std_cells_to_power
-# ######################################################################################################
 
 # Power Stripes
 setAddStripeMode -remove_floating_stripe_over_block 1 -merge_with_all_layers 1 -extend_to_first_ring 1 -route_over_rows_only 1 -allow_jog none -stacked_via_bottom_layer M4 -stacked_via_top_layer M9
@@ -99,7 +106,7 @@ addStripe -nets {VDD VSS} -layer M5 -direction {vertical}   -start $pstripe_star
 # Assign VDD/VSS
 connect_std_cells_to_power
 
-# saveDesign "${top_level}.pads_routed.enc"
+# saveDesign "${top_level}.floorplanned.enc"
 
 # Route power and ground to cell tracks
 sroute -nets {VDD VSS} -connect {corePin} -layerChangeRange {1 5} -allowJogging 0 -allowLayerChange 1 -crossoverViaLayerRange {1 5} -targetViaLayerRange {1 5}
@@ -126,19 +133,24 @@ congRepair
 addTieHiLo -cell "TIEHI_X1M_A12TR TIELO_X1M_A12TR"
 
 connect_std_cells_to_power
-# saveDesign "${top_level}.placed.enc"
+
 deleteEmptyModule
+
+# saveDesign "${top_level}.placed.enc"
 
 #####################################
 # Clock Tree Synthesis
 #####################################
 # Create clock tree spec 
-add_ndr -name CTS_2W1S -width_multiplier {M3:M4 2} -generate_via
-add_ndr -name CTS_2W2S -spacing_multiplier {M5:M10 2} -width_multiplier {M5:M10 2} -generate_via
+# add_ndr -name CTS_2W1S -width_multiplier {M3:M4 2} -generate_via
+# add_ndr -name CTS_2W2S -spacing_multiplier {M5:M10 2} -width_multiplier {M5:M10 2} -generate_via
 
-create_route_type -name leaf_rule  -non_default_rule CTS_2W1S -top_preferred_layer M4  -bottom_preferred_layer M3
-create_route_type -name trunk_rule -non_default_rule CTS_2W2S -top_preferred_layer M7  -bottom_preferred_layer M5 -shield_net VSS -bottom_shield_layer M6
-create_route_type -name top_rule   -non_default_rule CTS_2W2S -top_preferred_layer M10 -bottom_preferred_layer M8 -shield_net VSS -bottom_shield_layer M8 
+# create_route_type -name leaf_rule  -non_default_rule CTS_2W1S -top_preferred_layer M4  -bottom_preferred_layer M3
+# create_route_type -name trunk_rule -non_default_rule CTS_2W2S -top_preferred_layer M7  -bottom_preferred_layer M5 -shield_net VSS -bottom_shield_layer M6
+# create_route_type -name top_rule   -non_default_rule CTS_2W2S -top_preferred_layer M10 -bottom_preferred_layer M8 -shield_net VSS -bottom_shield_layer M8 
+create_route_type -name leaf_rule  -top_preferred_layer M4  -bottom_preferred_layer M3
+create_route_type -name trunk_rule -top_preferred_layer M7  -bottom_preferred_layer M5 -shield_net VSS -bottom_shield_layer M6
+create_route_type -name top_rule   -top_preferred_layer M10 -bottom_preferred_layer M8 -shield_net VSS -bottom_shield_layer M8 
 
 set_ccopt_property -net_type leaf  route_type leaf_rule
 set_ccopt_property -net_type trunk route_type trunk_rule
@@ -197,124 +209,108 @@ connect_std_cells_to_power
 # Finalize the design
 # Todo: this section could use some cleaning
 ###################################################
+setDelayCalMode -SIAware false
 
 # Check timing
-setAnalysisMode -skew -noWarn -checkType hold
+setAnalysisMode -skew true -warn false -checkType hold
 report_timing
-setAnalysisMode -skew -noWarn -setup -clockPropagation forcedIdeal
+setAnalysisMode -skew true -warn false -checkType setup -clockPropagation forcedIdeal
 report_timing
 
+timeDesign -postRoute -hold -pathReports -slackReports -numPaths 50
 
-timeDesign -postRoute -hold -pathReports -slackReports -numPaths 50 -prefix RNG_TOP_PAD_NEW_postRoute -outDir timingReports
-#setOptMode -effort high -leakagePowerEffort high -dynamicPowerEffort high -yieldEffort none -reclaimArea true -simplifyNetlist true -setupTargetSlack 0 -holdTargetSlack 0.1 -maxDensity 0.95 -drcMargin 0 -usefulSkew false
-setOptMode -fixCap true -fixTran true -fixFanoutLoad true
-optDesign -postRoute
+# Shrink Area/Density and Fix Timing, Fanout, and Capacitance DRC violations
+# setOptMode -effort high -powerEffort high -leakageToDynamicRatio 0.5 -yieldEffort none -reclaimArea true -simplifyNetlist true -setupTargetSlack 0 -holdTargetSlack 0.1 -maxDensity 0.95 -drcMargin 0 -usefulSkew false
 setOptMode -fixCap true -fixTran true -fixFanoutLoad true
 optDesign -postRoute
 optDesign -postRoute -hold
 
-# Fix Antenna errors
-# Set the top metal lower than the maximum level to avoid adding diodes
-setNanoRouteMode -routeTopRoutingLayer $top_routing_layer
-setNanoRouteMode -routeInsertDiodeForClockNets true
-setNanoRouteMode -drouteFixAntenna true
-setNanoRouteMode -routeAntennaCellName "ANTENNA2A10TR"
-setNanoRouteMode -routeInsertAntennaDiode true
-setNanoRouteMode -drouteSearchAndRepair true 
-setNanoRouteMode -routeWithTimingDriven true
-setNanoRouteMode -routeWithSiDriven true
+# # Fix Antenna errors
+# # Set the top metal lower than the maximum level to avoid adding diodes
+# setNanoRouteMode -routeTopRoutingLayer $top_routing_layer
+# setNanoRouteMode -routeInsertDiodeForClockNets true
+# setNanoRouteMode -drouteFixAntenna true
+# setNanoRouteMode -routeAntennaCellName "ANTENNA2A10TR"
+# setNanoRouteMode -routeInsertAntennaDiode true
+# setNanoRouteMode -drouteSearchAndRepair true 
+# setNanoRouteMode -routeWithTimingDriven true
+# setNanoRouteMode -routeWithSiDriven true
 
 globalDetailRoute
 optDesign -postRoute
 optDesign -postRoute -hold
 optDesign -postRoute -drv
 
-deleteObstruct -all
 # Add fill cells
-addFiller -cell FILLCAPTIE128A10TR FILLCAPTIE64A10TR FILLCAPTIE32A10TR FILLCAPTIE16A10TR FILLCAPTIE9A10TR FILLCAPTIE8A10TR -prefix FILLCAPTIE
-addFiller -cell FILLCAP128A10TR FILLCAP65A10TR FILLCAP32A10TR FILLCAP17A10TR FILLCAP8A10TR FILLCAP6A10TR -prefix FILLCAP
-addFiller -cell FILL128A10TR FILL64A10TR FILL32A10TR FILL16A10TR FILL8A10TR FILL4A10TH FILL2A10TR FILL1A10TR -prefix FILL
+addFiller -cell FILLDGCAP8_A12TR FILLDGCAP16_A12TR FILLDGCAP32_A12TR FILLDGCAP64_A12TR -prefix FILL
 
 # Connect any filler cells to power/ground
 connect_std_cells_to_power
-#saveDesign "${top_level}.routed2.enc"
 
-saveDesign "${top_level}.routed2.enc"
+# saveDesign "${top_level}.routed2.enc"
 
-addIoFiller -cell PFILLER20 -prefix PAD_FILLER -side e
-addIoFiller -cell PFILLER10 -prefix PAD_FILLER -side e
-addIoFiller -cell PFILLER1  -prefix PAD_FILLER -side e
-addIoFiller -cell PFILLER05 -prefix PAD_FILLER -side e
+# Add IO Pad Fillers
+# addIoFiller -cell PFILLER20 -prefix PAD_FILLER -side e
+# addIoFiller -cell PFILLER10 -prefix PAD_FILLER -side e
+# addIoFiller -cell PFILLER1  -prefix PAD_FILLER -side e
+# addIoFiller -cell PFILLER05 -prefix PAD_FILLER -side e
 
-# ###################################################
-# # Report and Output
-# ###################################################
-# #stooopp
+###################################################
+# Report and Output
+###################################################
+# Run some basic checks. We still have to run these with Calibre.
+clearDrc
+fixMinCutVia
+fillNotch
 
+# Run Geometry and Connection checks
+verifyGeometry -reportAllCells -viaOverlap -report ${output_dir}/${top_level}.geom.rpt
+verifyConnectivity -type all -noAntenna -report ${output_dir}/${top_level}.conn.rpt
+reportPower
 
-# # Run some basic checks. We still have to run these with Calibre.
-# clearDrc
-# verifyGeometry -reportAllCells -viaOverlap -report ${top_level}.geom.rpt
-# fixMinCutVia
-# fillNotch
-# verifyGeometry -reportAllCells -viaOverlap -report ${top_level}.geom.rpt
+# Report Final Timing
+setAnalysisMode -skew true -warn false -checkType hold
+report_timing
+setAnalysisMode -skew true -warn false -checkType setup -clockPropagation forcedIdeal
+report_timing
 
-# verifyConnectivity -type all -noAntenna -report ${top_level}.conn.rpt
-# reportPower
+# Save Design in Innovus format
+saveDesign "${top_level}.final.enc"
 
-# # Run Geometry and Connection checks
-# setAnalysisMode -skew -noWarn -hold
-# report_timing
-# setAnalysisMode -skew -noWarn -setup -clockPropagation forcedIdeal
-# report_timing
-# saveDesign "${top_level}.final.enc"
+# Generate SDF
+setExtractRCMode -detail -relative_c_th 0.01 -total_c_th 0.01 -specialNet
+extractRC -outfile ${output_dir}/${top_level}.cap
+rcOut -spf ${output_dir}/${top_level}.spf
+rcOut -spef ${output_dir}/${top_level}.spef
+setUseDefaultDelayLimit 10000
+delayCal -sdf ${output_dir}/${top_level}.sdf
+reportClockTree -postRoute -macromodel report_postroute.ctsmdl
+report_timing
 
-# # Generate SDF
-# setExtractRCMode -detail -relative_c_th 0.01 -total_c_th 0.01 -specialNet
-# extractRC -outfile ${top_level}.cap
-# rcOut -spf ${top_level}.spf
-# rcOut -spef ${top_level}.spef
-# setUseDefaultDelayLimit 10000
-# delayCal -sdf ${top_level}.apr.sdf
-# reportClockTree -postRoute -macromodel report_postroute.ctsmdl
-# #Generate SDF
-# #setExtractRCMode -engine detail -coupling_c_th 0 -coupled true
-# #extractRC
-# report_timing
-# #saveDesign "${top_level}.final_filled.enc"
-
-
-# # Output DEF
-# set dbgLefDefOutVersion 5.5
-# defOut -floorplan -netlist -routing ${top_level}.apr.def
+# Output DEF
+set dbgLefDefOutVersion 5.5
+defOut -floorplan -netlist -routing ${output_dir}/${top_level}.def
     
 # # Output LEF
-# lefout "$top_level.lef" -stripePin -PGpinLayers 1 2 3 4 5 6 7 8 9 
+lefout "${output_dir}/${top_level}.lef" -stripePin -PGpinLayers 1 2 3 4 5 6 7 8 9 10
+# write_lef_abstract
 
-# # Output GDSII
-# #setStreamOutMode -snapToMGrid true -virtualConnection false
-# streamOut $top_level.gds -mapFile ../TSMC65.mapOut
-# #-libName ${top_level} -structureName $top_level -mode ALL 
+# Output GDSII
+#setStreamOutMode -snapToMGrid true -virtualConnection false
+streamOut ${output_dir}/$top_level.gds -mapFile ${map_file_path}
 
-# # Output Netist
-# saveNetlist -excludeLeafCell ${top_level}.apr.v
-# saveNetlist -excludeLeafCell -lineLength 10000000 -includePowerGround -includePhysicalInst ${top_level}.apr.physical.v
-# saveNetlist -excludeLeafCell -lineLength 10000000 -includePowerGround -includePhysicalCell { FILLCAPTIE8A10TR FILLCAPTIE16A10TR FILLCAPTIE32A10TR FILLCAPTIE64A10TR FILLCAPTIE128A10TR} ${top_level}.apr.incPG.v
+# Output Netist
+saveNetlist -excludeLeafCell ${output_dir}/netlists/${top_level}.par.nl.v
+saveNetlist -excludeLeafCell -lineLength 10000000 -includePowerGround -includePhysicalInst ${output_dir}/netlists/${top_level}.par.physical.nl.v
+saveNetlist -excludeLeafCell -lineLength 10000000 -includePowerGround -includePhysicalCell {FILLDGCAP8_A12TR FILLDGCAP16_A12TR FILLDGCAP32_A12TR FILLDGCAP64_A12TR} ${output_dir}/netlists/${top_level}.par.incPG.nl.v
 
-# # Generate .lib
-# do_extract_model ${top_level}.lib
+# Generate .lib
+do_extract_model ${output_dir}/${top_level}.lib
 
-# # Convert .lib to .db
-# #dc_shell
-# #read_lib descriptor.lib 
-# #write_lib descriptor -f db -output descriptor.db
-# #quit
-# #exec ../../bin/lib_to_db.sh ${top_level}
-
-# puts "**************************************"
-# puts "*                                    *"
-# puts "* Innovus script finished            *"
-# puts "*                                    *"
-# puts "**************************************"
+puts "**************************************"
+puts "*                                    *"
+puts "* Innovus script finished            *"
+puts "*                                    *"
+puts "**************************************"
 
 # exit

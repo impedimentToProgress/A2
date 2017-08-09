@@ -18,7 +18,7 @@ set tech_stdcells_path ${stdcell_tech_root}/lef/tech_nominal_25c_3_20_20_00_00_0
 set tech_io_path       ${io_tech_root}/lef/io_gppr_soi12s0_t18_mv10_mv18_avt_pl_3_20_20_00_00_02_LB.lef
 
 # Load the Verilog netlist output from synthesis
-set init_verilog            ${syn_root}/${top_level}.nl.v
+set init_verilog            ${synth_root}/${top_level}.nl.v
 set init_design_netlisttype {Verilog}
 set init_design_settop		{1}
 set init_top_cell			${top_level}
@@ -49,7 +49,7 @@ create_delay_corner -name max_delay_corner -library_set slow_library_set; # -rc_
 create_delay_corner -name min_delay_corner -library_set fast_library_set; # -rc_corner rc_min
 
 # Load SDC constraints from Synthesis
-create_constraint_mode -name synth_constraints -sdc_files [list ${syn_root}/${top_level}.sdc]
+create_constraint_mode -name synth_constraints -sdc_files [list ${synth_root}/${top_level}.sdc]
 
 # Create timing analysis views
 create_analysis_view -name hold_view  -constraint_mode synth_constraints -delay_corner min_delay_corner
