@@ -16,8 +16,8 @@ set io_pad_width  	  130; # width of IO pad in microns
 set top_routing_layer 10
 
 # Die Dimensions
-set block_width   540
-set block_height  400
+set block_width   640
+set block_height  500
 
 # Core Offsets
 set left_offset   30
@@ -119,11 +119,11 @@ set_dont_touch [get_cells outbuffer*]
 
 setDesignMode -flowEffort high -process $process
 setPrerouteAsObs {1}
-timeDesign -prePlace
+timeDesign -prePlace -outDir ${output_dir}/timingReports
 
 setPlaceMode -maxRouteLayer 9
 placeDesign -noPrePlaceOpt
-timeDesign -preCTS
+timeDesign -preCTS -outDir ${output_dir}/timingReports
 
 setOptMode -holdTargetSlack 0.10 -holdFixingEffort high
 setOptMode -addInst true -addInstancePrefix PRECTS_
@@ -167,7 +167,7 @@ create_ccopt_clock_tree_spec -file ${top_level}.cts
 ccopt_design -cts
 
 setOptMode -restruct false -addInst true -addInstancePrefix POSCTS_ 
-timeDesign -postCTS
+timeDesign -postCTS -outDir ${output_dir}/timingReports
 optDesign -postCTS
 optDesign -postCTS -hold
 
@@ -207,7 +207,6 @@ connect_std_cells_to_power
 
 ###################################################
 # Finalize the design
-# Todo: this section could use some cleaning
 ###################################################
 setDelayCalMode -SIAware false
 
@@ -217,13 +216,14 @@ report_timing
 setAnalysisMode -skew true -warn false -checkType setup -clockPropagation forcedIdeal
 report_timing
 
-timeDesign -postRoute -hold -pathReports -slackReports -numPaths 50
+timeDesign -postRoute -hold -pathReports -slackReports -numPaths 50 -outDir ${output_dir}/timingReports
 
 # Shrink Area/Density and Fix Timing, Fanout, and Capacitance DRC violations
 # setOptMode -effort high -powerEffort high -leakageToDynamicRatio 0.5 -yieldEffort none -reclaimArea true -simplifyNetlist true -setupTargetSlack 0 -holdTargetSlack 0.1 -maxDensity 0.95 -drcMargin 0 -usefulSkew false
 setOptMode -fixCap true -fixTran true -fixFanoutLoad true
 optDesign -postRoute
 optDesign -postRoute -hold
+optDesign -postRoute -drv
 
 # # Fix Antenna errors
 # # Set the top metal lower than the maximum level to avoid adding diodes
@@ -235,11 +235,13 @@ optDesign -postRoute -hold
 # setNanoRouteMode -drouteSearchAndRepair true 
 # setNanoRouteMode -routeWithTimingDriven true
 # setNanoRouteMode -routeWithSiDriven true
+# globalDetailRoute
+# optDesign -postRoute
+# optDesign -postRoute -hold
+# optDesign -postRoute -drv
 
-globalDetailRoute
-optDesign -postRoute
-optDesign -postRoute -hold
-optDesign -postRoute -drv
+# Remove all routing obstructions
+deleteObstruct -all
 
 # Add fill cells
 addFiller -cell FILLDGCAP8_A12TR FILLDGCAP16_A12TR FILLDGCAP32_A12TR FILLDGCAP64_A12TR -prefix FILL
@@ -260,11 +262,11 @@ connect_std_cells_to_power
 ###################################################
 # Run some basic checks. We still have to run these with Calibre.
 clearDrc
-fixMinCutVia
+# fixMinCutVia; #TODO: ????
 fillNotch
 
 # Run Geometry and Connection checks
-verifyGeometry -reportAllCells -viaOverlap -report ${output_dir}/${top_level}.geom.rpt
+verifyGeometry -reportAllCells -report ${output_dir}/${top_level}.geom.rpt
 verifyConnectivity -type all -noAntenna -report ${output_dir}/${top_level}.conn.rpt
 reportPower
 
@@ -278,22 +280,21 @@ report_timing
 saveDesign "${top_level}.final.enc"
 
 # Generate SDF
-setExtractRCMode -detail -relative_c_th 0.01 -total_c_th 0.01 -specialNet
+setExtractRCMode -engine postRoute -coupled true -relative_c_th 0.01 -total_c_th 0.01 -specialNet true
 extractRC -outfile ${output_dir}/${top_level}.cap
 rcOut -spf ${output_dir}/${top_level}.spf
 rcOut -spef ${output_dir}/${top_level}.spef
 setUseDefaultDelayLimit 10000
 delayCal -sdf ${output_dir}/${top_level}.sdf
-reportClockTree -postRoute -macromodel report_postroute.ctsmdl
+# reportClockTree -postRoute -macromodel report_postroute.ctsmdl
 report_timing
 
 # Output DEF
-set dbgLefDefOutVersion 5.5
+set dbgLefDefOutVersion 5.8
 defOut -floorplan -netlist -routing ${output_dir}/${top_level}.def
     
-# # Output LEF
-lefout "${output_dir}/${top_level}.lef" -stripePin -PGpinLayers 1 2 3 4 5 6 7 8 9 10
-# write_lef_abstract
+# Output LEF
+write_lef_abstract "${output_dir}/${top_level}.lef" -stripePin -PGPinLayers {1 2 3 4 5 6 7 8 9 10}
 
 # Output GDSII
 #setStreamOutMode -snapToMGrid true -virtualConnection false
@@ -305,7 +306,7 @@ saveNetlist -excludeLeafCell -lineLength 10000000 -includePowerGround -includePh
 saveNetlist -excludeLeafCell -lineLength 10000000 -includePowerGround -includePhysicalCell {FILLDGCAP8_A12TR FILLDGCAP16_A12TR FILLDGCAP32_A12TR FILLDGCAP64_A12TR} ${output_dir}/netlists/${top_level}.par.incPG.nl.v
 
 # Generate .lib
-do_extract_model ${output_dir}/${top_level}.lib
+# do_extract_model ${output_dir}/${top_level}.lib
 
 puts "**************************************"
 puts "*                                    *"
