@@ -2,10 +2,12 @@
 # Author: Timothy Trippel
 # Last Edited: August 2017
 ###################################
-set global_config mal_top.globals
-set output_dir    par_output
-set par_root  	  /home/ttrippel/A2/asic_hardware/par
-set map_file_path /home/cadlib/Processes/IBM/STANDARD_CELLS/ARM/12s0/ibm/soi12s0/sc12_base_v31_rvt/2009q1v2/lef/tech_nominal_25c_3_20_30_00_00_02_LB.map
+set global_config     mal_top.globals
+set output_dir        par_output
+set par_root  	      /home/ttrippel/A2/asic_hardware/par
+set map_file_path     /home/cadlib/Processes/IBM/STANDARD_CELLS/ARM/12s0/ibm/soi12s0/sc12_base_v31_rvt/2009q1v2/lef/tech_nominal_25c_3_20_20_00_00_02_LB.map
+set io_cell_gds_path  /home/cadlib/Processes/IBM/STANDARD_CELLS/ARM/12s0/arm/ibm/soi12s0/io_gppr_t18_mv10_mv18_avt_pl/r0p0-00bet0/gds2/io_gppr_soi12s0_t18_mv10_mv18_avt_pl_3_20_20_00_00_02_LB.gds2
+set std_cell_gds_path /home/cadlib/Processes/IBM/STANDARD_CELLS/ARM/12s0/ibm/soi12s0/sc12_base_v31_rvt/2009q1v2/gds2/sc12_base_v31_rvt_soi12s0.gds2
 
 ###################################
 # CONFIG
@@ -39,14 +41,6 @@ set pstripe_stop    [expr $block_width - $io_pad_width - $right_offset + 1]
   # setMultiCpuUsage -acquireLicense 8
 #}
 
-# restore_from_saved ${par_root} ${top_level}
-# proc restore_from_saved { par_root top_level } {
-#     restoreDesign ${par_root}/${top_level}.route.enc.dat ${top_level}
-#     redraw
-#     fit
-#     win
-# }
-
 proc connect_std_cells_to_power { } {
     globalNetConnect VDD -type tiehi -inst * -verbose
     globalNetConnect VSS -type tielo -inst * -verbose
@@ -54,6 +48,15 @@ proc connect_std_cells_to_power { } {
     globalNetConnect VSS -type pgpin -pin VSS -inst * -verbose
     applyGlobalNets
 }
+
+# proc restore_from_saved { par_root top_level } {
+#     restoreDesign ${par_root}/${top_level}.final.enc.dat ${top_level}
+#     redraw
+#     fit
+#     win
+# }
+
+# restore_from_saved ${par_root} ${top_level}
 
 ###################################
 # Init
@@ -297,13 +300,18 @@ defOut -floorplan -netlist -routing ${output_dir}/${top_level}.def
 write_lef_abstract "${output_dir}/${top_level}.lef" -stripePin -PGPinLayers {1 2 3 4 5 6 7 8 9 10}
 
 # Output GDSII
-#setStreamOutMode -snapToMGrid true -virtualConnection false
-streamOut ${output_dir}/$top_level.gds -mapFile ${map_file_path}
+setStreamOutMode -snapToMGrid true -virtualConnection false -supportPathType4 false
+# streamOut ${output_dir}/$top_level.gds -mapFile ${map_file_path}
+# streamOut ${output_dir}/$top_level.all.gds -mode all -mapFile ${map_file_path}
+# streamOut ${output_dir}/$top_level.all.netname.gds -mode all -attachNetName 1 -mapFile ${map_file_path}
+streamOut ${output_dir}/$top_level.gds -merge [list $std_cell_gds_path $io_cell_gds_path] -mode all -attachNetName 1 -mapFile ${map_file_path}
 
 # Output Netist
 saveNetlist -excludeLeafCell ${output_dir}/netlists/${top_level}.par.nl.v
-saveNetlist -excludeLeafCell -lineLength 10000000 -includePowerGround -includePhysicalInst ${output_dir}/netlists/${top_level}.par.physical.nl.v
-saveNetlist -excludeLeafCell -lineLength 10000000 -includePowerGround -includePhysicalCell {FILLDGCAP8_A12TR FILLDGCAP16_A12TR FILLDGCAP32_A12TR FILLDGCAP64_A12TR} ${output_dir}/netlists/${top_level}.par.incPG.nl.v
+saveNetlist -excludeLeafCell -lineLength 10000 -includePhysicalInst ${output_dir}/netlists/${top_level}.par.filler_noPG.nl.v
+saveNetlist -excludeLeafCell -lineLength 10000 -includePhysicalInst -includePowerGround ${output_dir}/netlists/${top_level}.par.filler_PG.nl.v
+saveNetlist -excludeLeafCell -lineLength 10000 -includePhysicalCell {FILLDGCAP8_A12TR FILLDGCAP16_A12TR FILLDGCAP32_A12TR FILLDGCAP64_A12TR} ${output_dir}/netlists/${top_level}.par.specifiedfiller_noPG.nl.v
+saveNetlist -excludeLeafCell -lineLength 10000 -includePowerGround -includePhysicalCell {FILLDGCAP8_A12TR FILLDGCAP16_A12TR FILLDGCAP32_A12TR FILLDGCAP64_A12TR} ${output_dir}/netlists/${top_level}.par.specifiedfiller_PG.nl.v
 
 # Generate .lib
 # do_extract_model ${output_dir}/${top_level}.lib
@@ -314,4 +322,4 @@ puts "* Innovus script finished            *"
 puts "*                                    *"
 puts "**************************************"
 
-# exit
+exit
